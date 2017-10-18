@@ -8,7 +8,6 @@ Getting Started
 ---------------
 
 ```java
-
 	JSONObject json = new JSONObject();
 	
 	//Insert objects
@@ -50,7 +49,4 @@ Getting Started
 	//for pretty printing
 	System.out.println(array2.toFancyString());
 	
-	
-	
-
 ```
