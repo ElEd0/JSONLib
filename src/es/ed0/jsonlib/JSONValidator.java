@@ -5,6 +5,8 @@ package es.ed0.jsonlib;
 
 public class JSONValidator {
 	
+	public static final int OBJECT = 0, ARRAY = 1, ERROR = -1; 
+	
 	public static boolean validateJSON(String raw) {
 		if(!(raw.startsWith("{") && raw.endsWith("}")))
 			return false;
@@ -31,6 +33,21 @@ public class JSONValidator {
 				return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Return type of object (jsonObject or jsonArray) as int</br>
+	 * Constants:</br>
+	 * JSONValidator.OBJECT, JSONValidator.ARRAY, JSONValidator.ERROR 
+	 * @param raw
+	 * @return
+	 */
+	public static int jsonType(String raw) {
+		if(raw.startsWith("{"))
+			return JSONValidator.OBJECT;
+		else if (raw.startsWith("["))
+			return JSONValidator.ARRAY;
+		return JSONValidator.ERROR;
 	}
 	
 	private static boolean checkAsterisks(String ch) {
