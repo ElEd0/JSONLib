@@ -14,8 +14,14 @@ public class JSONArray {
 	}
 	
 	public JSONArray(String raw) throws JSONException {
+		this();
 		if(!JSONValidator.validateArray(raw))
 			throw new JSONException("JsonArray String not valid");
+		String body=raw.substring(1, raw.length()-1); //remove [] from raw
+		String[] jsonRaws = body.split(";");
+		for(String jsonRaw : jsonRaws)
+			jsons.add(new JSONObject(jsonRaw));
+		
 	}
 	
 	public void add(JSONObject json) {
