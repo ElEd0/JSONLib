@@ -28,6 +28,19 @@ public class JSONArray {
 		jsons.add(json);
 	}
 	
+	public boolean remove(JSONObject json) {
+		return jsons.remove(json);
+	}
+	
+	public boolean remove(int index) {
+		try {
+			jsons.remove(index);
+			return true;
+		}catch (IndexOutOfBoundsException e) {
+			return false;
+		}
+	}
+	
 	public void add(String key, String object) {
 		try {
 			jsons.add(new JSONObject((jsons.size()==0?"":",")+

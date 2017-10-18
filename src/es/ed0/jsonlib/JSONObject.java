@@ -40,6 +40,26 @@ public class JSONObject {
 		body+="\""+key+"\":\""+value+"\"";
 	}
 	
+	public String getString(String key) {
+		return (String) get(key);
+	}
+	
+	public int getInt(String key) {
+		try {
+			return Integer.valueOf((String) get(key));
+		}catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+	public float getFloat(String key) {
+		try {
+			return Float.valueOf((String) get(key));
+		}catch (NumberFormatException e) {
+			return 0f;
+		}
+	}
+	
 	/**
 	 * It gets the Object represented by the given key
 	 * @param key
@@ -52,8 +72,18 @@ public class JSONObject {
 		for(String entry : entries) {
 			String[] kandv = entry.split(":");
 			if(kandv.length<2) return null;
-			if(getValueFromString(kandv[0]).equals(key))
-				return getValueFromString(kandv[1]);
+			if(getValueFromString(kandv[0]).equals(key)) {
+				String value = getValueFromString(kandv[1]);
+				try {
+					return Integer.valueOf(value);
+				}catch (NumberFormatException e) {
+					try {
+						return Float.valueOf(value);
+					}catch (NumberFormatException e1) {
+						return value;
+					}
+				}
+			}
 			
 		}
 		
