@@ -15,9 +15,11 @@ public class JSONObject {
 	public JSONObject(String json) throws JSONException {
 		if(!JSONValidator.validateJSON(json))
 			throw new JSONException("Json string not valid!");
-		else
-			body=json.substring(1, json.length()-1); //remove braquets from json
+		
+		body=json.substring(1, json.length()-1); //remove braquets from json
+		body = body.replace("}{", ",");
 	}
+	
 	
 	/**
 	 * Creates a new empty JSON
