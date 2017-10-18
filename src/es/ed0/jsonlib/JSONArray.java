@@ -26,6 +26,14 @@ public class JSONArray {
 		jsons.add(new JSONObject(raw));
 	}
 	
+	public JSONObject get(int index) {
+		try {
+			return jsons.get(index);
+		}catch (IndexOutOfBoundsException e) {
+			return null;
+		}
+	}
+	
 	/**
 	 * Returns the JSONArray as a raw string
 	 */
