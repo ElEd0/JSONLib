@@ -3,6 +3,11 @@ JSONLib tiniest JSON Library
 ====================================
 By Ed0
 
+Download
+--------
+
+Last releases in the exports folder
+
 
 Getting Started
 ---------------
