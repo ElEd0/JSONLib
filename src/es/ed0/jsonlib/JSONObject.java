@@ -87,7 +87,7 @@ public class JSONObject {
 	 * @param index
 	 * @return null if key doesn't exist
 	 */
-	public Object getKey(int index) {
+	public String getKey(int index) {
 
 		String[] entries = body.split(",");
 		if(entries.length==0)
@@ -99,6 +99,21 @@ public class JSONObject {
 			return null;
 		}
 		
+	}
+	
+	public String[] keyArray() {
+	String[] ret = new String[this.length()];
+	for(int i=0; i<ret.length; i++)
+		ret[i] = getKey(i);
+	return ret;
+	}
+
+	
+	public Object[] valueArray() {
+	Object[] ret = new Object[this.length()];
+	for(int i=0; i<ret.length; i++)
+		ret[i] = get(i);
+	return ret;
 	}
 	
 	/**

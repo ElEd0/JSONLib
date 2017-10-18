@@ -18,12 +18,17 @@ public class JSONArray {
 			throw new JSONException("JsonArray String not valid");
 	}
 	
-	public void put(JSONObject json) {
+	public void add(JSONObject json) {
 		jsons.add(json);
 	}
 	
-	public void put(String raw) throws JSONException {
-		jsons.add(new JSONObject(raw));
+	public void add(String key, String object) {
+		try {
+			jsons.add(new JSONObject((jsons.size()==0?"":",")+
+					"{\""+key+"\":\""+object+"\"}"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public JSONObject get(int index) {
