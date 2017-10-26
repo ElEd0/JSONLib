@@ -48,7 +48,7 @@ public class JSONObject {
 	
 	public int getInt(String key) {
 		try {
-			return Integer.valueOf((String) get(key));
+			return Integer.valueOf(String.valueOf(get(key)));
 		}catch (NumberFormatException e) {
 			return 0;
 		}
@@ -56,7 +56,7 @@ public class JSONObject {
 
 	public float getFloat(String key) {
 		try {
-			return Float.valueOf((String) get(key));
+			return Float.valueOf(String.valueOf(get(key)));
 		}catch (NumberFormatException e) {
 			return 0f;
 		}
