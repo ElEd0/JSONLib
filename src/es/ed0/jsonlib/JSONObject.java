@@ -16,7 +16,7 @@ public class JSONObject {
 		if(!JSONValidator.validateJSON(json))
 			throw new JSONException("Json string not valid!");
 		
-		body=json.substring(1, json.length()-1); //remove braquets from json
+		body=json.substring(1, json.length()-1); //remove brackets from json
 		body = body.replace("}{", ",");
 	}
 	
@@ -91,6 +91,7 @@ public class JSONObject {
 		
 		return null;
 	}
+	
 	/**
 	 * Returns the Object represented by the key at <code>index</code>
 	 * Starting at 0
@@ -113,6 +114,7 @@ public class JSONObject {
 		return this.get(key);
 		
 	}
+	
 	/**
 	 * Returns the key at <code>index</code>
 	 * Starting at 0
@@ -181,6 +183,7 @@ public class JSONObject {
 	/**
 	 * Returns the JSON as a raw string
 	 */
+	@Override
 	public String toString() {
 		return "{"+body+"}";
 	}
@@ -206,5 +209,4 @@ public class JSONObject {
 	private String getValueFromString(String seq) {
 		return seq.substring(seq.indexOf("\"")+1, seq.length()-1);
 	}
-	
 }

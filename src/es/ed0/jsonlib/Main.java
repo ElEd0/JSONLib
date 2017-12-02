@@ -14,15 +14,18 @@ public class Main {
 	}
 	
 	private Main() throws JSONException {
-		JSONObject json = new JSONObject();
-		json.put("key1", "value1");
-		json.put("key2", 2);
-		json.put("key3", 3.2);
 		
-		String key1 = (String) json.get("key1");
-		int key2 = (int) json.get("key2");
-		float key3 = (float) json.get("key3");
-		System.out.println(key1+" | "+key2+" | "+key3);
+        JSONObject j = new JSONObject();
+
+        j.put("key1", 123);
+        j.put("key2", "string2");
+
+        for(Object o : j.valueArray()) {
+        	System.out.println(o);
+        }
+
+        System.out.println(j.get("key2").toString());
+
 		
 	}
 
