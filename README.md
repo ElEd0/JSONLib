@@ -1,5 +1,5 @@
 ====================================
-JSONLib tiniest JSON Library
+JSONLib tiniest JSON Library (WIP)
 ====================================
 By Ed0
 
