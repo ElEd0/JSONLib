@@ -7,95 +7,59 @@ import java.util.ArrayList;
 
 public class JSONArray {
 	
-	private ArrayList<JSONObject> jsons;
+	private ArrayList<Object> objects;
 	
 	public JSONArray() {
-		jsons = new ArrayList<JSONObject>();
+		objects = new ArrayList<Object>();
 	}
 	
 	public JSONArray(String raw) throws JSONException {
-		this();
-		if(!JSONValidator.validateArray(raw))
-			throw new JSONException("JsonArray String not valid");
-		String body=raw.substring(1, raw.length()-1); //remove [] from raw
-		String[] jsonRaws = body.split(";");
-		for(String jsonRaw : jsonRaws)
-			jsons.add(new JSONObject(jsonRaw));
-		
+		objects = JSONValidator.validateAndList(raw);
+		if(objects == null)
+			throw new JSONException("JSONArray String not valid");		
 	}
 	
-	public void add(JSONObject json) {
-		jsons.add(json);
+	public boolean add(Object obj) {
+		return objects.add(obj);
 	}
-	
-	public boolean remove(JSONObject json) {
-		return jsons.remove(json);
-	}
-	
+
 	public boolean remove(int index) {
 		try {
-			jsons.remove(index);
-			return true;
-		}catch (IndexOutOfBoundsException e) {
+			return objects.remove(index) != null;
+		} catch (IndexOutOfBoundsException e) {
 			return false;
 		}
 	}
 	
-	public void add(String key, String object) {
-		try {
-			jsons.add(new JSONObject((jsons.size()==0?"":",")+
-					"{\""+key+"\":\""+object+"\"}"));
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+	public boolean remove(Object obj) {
+		return objects.remove(obj);
 	}
 	
-	public JSONObject get(int index) {
-		try {
-			return jsons.get(index);
-		}catch (IndexOutOfBoundsException e) {
-			return null;
-		}
+	public Object get(int index) {
+		return objects.get(index);
 	}
 	
 	/**
 	 * Returns the JSONArray as a raw string
 	 */
+	@Override
 	public String toString() {
-		String ret = "";
-		for(JSONObject json : jsons) {
-			if(ret.length()!=0)
-				ret+=";";
-			ret+=json.toString();
-		}
-		return "["+ret+"]";
-	}
-	
+		final StringBuilder sb = new StringBuilder("[");
 
-	/**
-	 * Returns a formated string (not valid as raw json string)
-	 * @return
-	 */
-	public String toFancyString() {
-		String ret = "";
-		ret+="[--------------\n";
-		for(int j=0; j<jsons.size(); j++) {
-			if(j!=0)
-				ret+="---------------\n";
-			ret+="  json "+j+" {\n";
-			for(int i=0; i<jsons.get(j).length(); i++)
-				ret+="  -"+jsons.get(j).getKey(i)+" --> "+jsons.get(j).get(i)+"\n";
-			ret+="  }\n";
-		}
-		ret+="---------------]";
-		return ret;
+		for(Object obj : objects)
+			// "value",
+			sb.append(obj).append(",");
+		
+		sb.substring(0, sb.length() - 1);
+		return sb.append("]").toString();
+	}
+
+	public Object[] getValues() {
+		return objects.toArray();
 	}
 	
-	public JSONObject[] getAsArray() {
-		JSONObject[] ret = new JSONObject[jsons.size()];
-		for(int i=0; i<jsons.size(); i++)
-			ret[i]=jsons.get(i);
-		return ret;
+	public int length() {
+		return objects.size();
 	}
 	
 	public byte[] getByteArray() {

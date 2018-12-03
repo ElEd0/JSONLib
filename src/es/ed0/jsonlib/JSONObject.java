@@ -3,29 +3,33 @@
  */
 package es.ed0.jsonlib;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 public class JSONObject {
+		
 	
-	private String body = "";
-	
+	private HashMap<String, Object> mappings;
+
+	/**
+	 * Creates a new empty JSON
+	 */
+	public JSONObject() {
+		mappings = new HashMap<String, Object>();
+	}
+
 	/**
 	 * Generates a new JSON from the raw string given
 	 * @param Raw JSON string
 	 * @throws JSONException if the given string is not a valid raw JSON string
 	 */
 	public JSONObject(String json) throws JSONException {
-		if(!JSONValidator.validateJSON(json))
-			throw new JSONException("Json string not valid!");
+		mappings = JSONValidator.validateAndMap(json);
+		if(mappings == null)
+			throw new JSONException("JSON string not valid!");
 		
-		body=json.substring(1, json.length()-1); //remove brackets from json
-		body = body.replace("}{", ",");
 	}
 	
-	
-	/**
-	 * Creates a new empty JSON
-	 */
-	public JSONObject() {
-	}
 	
 	
 	/**
@@ -35,141 +39,119 @@ public class JSONObject {
 	 * @param object
 	 */
 	public void put(String key, Object obj) {
-		String value = String.valueOf(obj);
-		this.remove(key);
-		if(body.length()!=0)
-			body+=",";
-		body+="\""+key+"\":\""+value+"\"";
-	}
-	
-	public String getString(String key) {
-		return (String) get(key);
-	}
-	
-	public int getInt(String key) {
-		try {
-			return Integer.valueOf(String.valueOf(get(key)));
-		}catch (NumberFormatException e) {
-			return 0;
-		}
+		mappings.put(key, obj);
 	}
 
-	public float getFloat(String key) {
-		try {
-			return Float.valueOf(String.valueOf(get(key)));
-		}catch (NumberFormatException e) {
-			return 0f;
-		}
-	}
-	
 	/**
-	 * It gets the Object represented by the given key
+	 * Retrieves the Object represented by the given key
 	 * @param key
 	 * @return Object represented by key, null if key is not mapped
 	 */
 	public Object get(String key) {
-		String[] entries = body.split(",");
-		if(entries.length==0)
-			return null;
-		for(String entry : entries) {
-			String[] kandv = entry.split(":");
-			if(kandv.length<2) return null;
-			if(getValueFromString(kandv[0]).equals(key)) {
-				String value = getValueFromString(kandv[1]);
-				try {
-					return Integer.valueOf(value);
-				}catch (NumberFormatException e) {
-					try {
-						return Float.valueOf(value);
-					}catch (NumberFormatException e1) {
-						return value;
-					}
-				}
-			}
-			
-		}
-		
-		return null;
+		return mappings.get(key);
 	}
 	
 	/**
-	 * Returns the Object represented by the key at <code>index</code>
-	 * Starting at 0
-	 * @param index
-	 * @return Object represented by key at <code>index</code>, null if key is not mapped
+	 * Retrieves the String represented by the given key
+	 * @param key
+	 * @return Object represented by key, null if key is not mapped
 	 */
-	public Object get(int index) {
-
-		String[] entries = body.split(",");
-		if(entries.length==0)
-			return null;
-		String key;
-		try {
-			String[] kandv = entries[index].split(":");
-			key=getValueFromString(kandv[0]);
-		}catch(IndexOutOfBoundsException e) {
-			return null;
-		}
-		
-		return this.get(key);
-		
+	public String getString(String key) {
+		return get(key).toString();
 	}
-	
+
 	/**
-	 * Returns the key at <code>index</code>
-	 * Starting at 0
-	 * @param index
-	 * @return null if key doesn't exist
+	 * Retrieves the Integer represented by the given key
+	 * @param key
+	 * @return Integer represented by key, null if key is not mapped
 	 */
-	public String getKey(int index) {
-
-		String[] entries = body.split(",");
-		if(entries.length==0)
-			return null;
+	public Integer getInt(String key) {
 		try {
-			String[] kandv = entries[index].split(":");
-			return getValueFromString(kandv[0]);
-		}catch(IndexOutOfBoundsException e) {
+			return Integer.valueOf(String.valueOf(get(key)));
+		}catch (NumberFormatException e) {
 			return null;
 		}
-		
+	}
+
+	/**
+	 * Retrieves the Float/Double represented by the given key
+	 * @param key
+	 * @return Double value represented by key, null if key is not mapped
+	 */
+	public Double getDouble(String key) {
+		try {
+			return Double.valueOf(String.valueOf(get(key)));
+		}catch (NumberFormatException e) {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns true if the given key is mapped with "true" as value, false otherwise
+	 * @param key
+	 * @return
+	 */
+	public boolean getBoolean(String key) {
+		return Boolean.valueOf(String.valueOf(get(key)));
+	}
+
+	/**
+	 * Retrieves the JSONObject represented by the given key
+	 * @param key
+	 * @return JSONObject represented by key, null if key is not mapped
+	 */
+	public JSONObject getJSONObject(String key) {
+		final Object o = get(key);
+		if(o instanceof JSONObject)
+			return (JSONObject) o;
+		else
+			return null;
+	}
+
+	/**
+	 * Retrieves the JSONArray represented by the given key
+	 * @param key
+	 * @return JSONArray represented by key, null if key is not mapped
+	 */
+	public JSONArray getJSONArray(String key) {
+		final Object o = get(key);
+		if(o instanceof JSONArray)
+			return (JSONArray) o;
+		else
+			return null;
 	}
 	
-	public String[] keyArray() {
-	String[] ret = new String[this.length()];
-	for(int i=0; i<ret.length; i++)
-		ret[i] = getKey(i);
-	return ret;
+	
+	public String[] getKeys() {
+		final String[] ret = new String[this.length()];
+		int i = 0;
+		for(Entry<String, Object> entry : mappings.entrySet()) {
+			ret[i] = entry.getKey();
+			i++;
+		}
+		return ret;
 	}
 
 	
-	public Object[] valueArray() {
-	Object[] ret = new Object[this.length()];
-	for(int i=0; i<ret.length; i++)
-		ret[i] = get(i);
-	return ret;
+	public Object[] getValues() {
+		final Object[] ret = new Object[this.length()];
+		int i = 0;
+		for(Entry<String, Object> entry : mappings.entrySet()) {
+			ret[i] = entry.getValue();
+			i++;
+		}
+		return ret;
 	}
-	
+
 	/**
 	 * Removes the object represented by the given key
 	 * @param key
 	 * @return true if the object was found and removed, false otherwise
 	 */
 	public boolean remove(String key) {
-		if(this.get(key)==null) return false;
-		
-		String[] entries = body.split(",");
-		String temp = "";
-		boolean could = false;
-		
-		for(String entry : entries) {
-			if(!(entry.contains("\""+key+"\""))) {
-				if(temp.length()!=0) temp+=",";
-				temp+=entry;
-			}else could=true;
-		}
-		body=temp;
-		return could;
+		final int lastLength = this.length();
+		mappings.remove(key);
+		return lastLength != this.length();
 	}
 	
 	/**
@@ -177,7 +159,7 @@ public class JSONObject {
 	 * @return 
 	 */
 	public int length() {
-		return body.split(",").length;
+		return mappings.size();
 	}
 	
 	/**
@@ -185,28 +167,22 @@ public class JSONObject {
 	 */
 	@Override
 	public String toString() {
-		return "{"+body+"}";
+		final StringBuilder sb = new StringBuilder("{");
+
+		for(Entry<String, Object> entry : mappings.entrySet())
+			if(entry.getValue().toString().startsWith("{") || entry.getValue().toString().startsWith("["))
+				sb.append("\""+entry.getKey() + "\":" + entry.getValue() + ",");
+			else
+				sb.append("\""+entry.getKey() + "\":\"" + entry.getValue() + "\",");
+			
+		
+		sb.delete(sb.length() - 1, sb.length());
+		return sb.append("}").toString();
 	}
 	
-	/**
-	 * Returns a formated string (not valid as raw json string)
-	 * @return
-	 */
-	public String toFancyString() {
-		String ret = "";
-		ret+="{\n";
-		for(int i=0; i<length(); i++)
-			ret+="-"+getKey(i)+" --> "+get(i)+"\n";
-		ret+="}";
-		return ret;
-	}
 	
 	public byte[] getByteArray() {
 		return this.toString().getBytes();
 	}
 	
-	
-	private String getValueFromString(String seq) {
-		return seq.substring(seq.indexOf("\"")+1, seq.length()-1);
-	}
 }
