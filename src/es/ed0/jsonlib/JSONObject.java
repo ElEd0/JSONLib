@@ -6,49 +6,48 @@ package es.ed0.jsonlib;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-public class JSONObject {
-		
+public class JSONObject extends HashMap<String, Object> implements JSONEntity {
+	private static final long serialVersionUID = -6961839899528603878L;
 	
-	private HashMap<String, Object> mappings;
 
 	/**
 	 * Creates a new empty JSON
 	 */
 	public JSONObject() {
-		mappings = new HashMap<String, Object>();
+		super();
 	}
 
-	/**
-	 * Generates a new JSON from the raw string given
-	 * @param Raw JSON string
-	 * @throws JSONException if the given string is not a valid raw JSON string
-	 */
-	public JSONObject(String json) throws JSONException {
-		mappings = JSONValidator.validateAndMap(json);
-		if(mappings == null)
-			throw new JSONException("JSON string not valid!");
-		
-	}
-	
-	
-	
-	/**
-	 * Adds the given object identified by the given key to this JSON
-	 * If the given key is already mapped it will change the value
-	 * @param key
-	 * @param object
-	 */
-	public void put(String key, Object obj) {
-		mappings.put(key, obj);
-	}
 
 	/**
 	 * Retrieves the Object represented by the given key
-	 * @param key
-	 * @return Object represented by key, null if key is not mapped
+	 * @param key as a String
+	 * @return Object represented by key, or null value not mapped
 	 */
 	public Object get(String key) {
-		return mappings.get(key);
+		final Object o = get(key);
+		
+		try {
+			return get(Integer.valueOf(key));
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+	/* (non-Javadoc)
+	 * @see es.ed0.jsonlib.JSONEntity#get(java.lang.String[])
+	 */
+	@Override
+	public Object get(String... keys) {
+		final String[] leftOverKeys = new String[keys.length - 1];
+		for(int i=0; i<leftOverKeys.length; i++)
+			leftOverKeys[i] = keys[i+1];
+		
+ 		final Object o = get(keys[0]);
+		if(o == null || keys.length == 1)
+			return o;
+		else if (o instanceof JSONEntity) 
+			return ((JSONEntity) o).get(leftOverKeys);
+		else 
+			return null;
 	}
 	
 	/**
@@ -57,7 +56,11 @@ public class JSONObject {
 	 * @return Object represented by key, null if key is not mapped
 	 */
 	public String getString(String key) {
-		return get(key).toString();
+		final Object o = get(key);
+		if(o != null)
+			return o.toString();
+		else
+			return null;
 	}
 
 	/**
@@ -107,7 +110,7 @@ public class JSONObject {
 		else
 			return null;
 	}
-
+	
 	/**
 	 * Retrieves the JSONArray represented by the given key
 	 * @param key
@@ -123,9 +126,9 @@ public class JSONObject {
 	
 	
 	public String[] getKeys() {
-		final String[] ret = new String[this.length()];
+		final String[] ret = new String[this.size()];
 		int i = 0;
-		for(Entry<String, Object> entry : mappings.entrySet()) {
+		for(Entry<String, Object> entry : this.entrySet()) {
 			ret[i] = entry.getKey();
 			i++;
 		}
@@ -134,32 +137,27 @@ public class JSONObject {
 
 	
 	public Object[] getValues() {
-		final Object[] ret = new Object[this.length()];
+		final Object[] ret = new Object[this.size()];
 		int i = 0;
-		for(Entry<String, Object> entry : mappings.entrySet()) {
+		for(Entry<String, Object> entry : this.entrySet()) {
 			ret[i] = entry.getValue();
 			i++;
 		}
 		return ret;
 	}
 
+	public void add(String key, Object value) {
+		super.put(key, value);
+	}
 	/**
 	 * Removes the object represented by the given key
 	 * @param key
 	 * @return true if the object was found and removed, false otherwise
 	 */
 	public boolean remove(String key) {
-		final int lastLength = this.length();
-		mappings.remove(key);
-		return lastLength != this.length();
-	}
-	
-	/**
-	 * Return number of Objects mapped in this JSON
-	 * @return 
-	 */
-	public int length() {
-		return mappings.size();
+		final int lastLength = this.size();
+		super.remove(key);
+		return lastLength != this.size();
 	}
 	
 	/**
@@ -169,7 +167,7 @@ public class JSONObject {
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("{");
 
-		for(Entry<String, Object> entry : mappings.entrySet())
+		for(Entry<String, Object> entry : this.entrySet())
 			if(entry.getValue().toString().startsWith("{") || entry.getValue().toString().startsWith("["))
 				sb.append("\""+entry.getKey() + "\":" + entry.getValue() + ",");
 			else
@@ -184,5 +182,17 @@ public class JSONObject {
 	public byte[] getByteArray() {
 		return this.toString().getBytes();
 	}
+
+
+
+	/* (non-Javadoc)
+	 * @see es.ed0.jsonlib.JSONEntity#getAsByteArray()
+	 */
+	@Override
+	public byte[] getAsByteArray() {
+		// TODO Auto-generated method stub
+		return toString().getBytes();
+	}
+
 	
 }
