@@ -4,6 +4,7 @@
 package es.ed0.jsonlib;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class JSONArray extends ArrayList<Object> implements JSONEntity {
 	private static final long serialVersionUID = 5931962894418725776L;
@@ -23,6 +24,16 @@ public class JSONArray extends ArrayList<Object> implements JSONEntity {
 		} catch (NumberFormatException e) {
 			return null;
 		}
+	}
+	
+	/**
+	 * Retrieves the Object represented by the given index
+	 * @param index
+	 * @return Object represented by index, or null if value cant be found
+	 */
+	@Override
+	public Object get(int index) {
+		return JSONParser.escapeQuotes(super.get(index), true);
 	}
 	
 	/**
@@ -142,6 +153,38 @@ public class JSONArray extends ArrayList<Object> implements JSONEntity {
 	@Override
 	public byte[] getAsByteArray() {
 		return toString().getBytes();
+	}
+	
+
+	/**
+	 * Obtains an Object array containing the value of the JSONArray <br>
+	 * True will return the values keeping the quotes (if any) <br>
+	 * False will return the escaped value
+	 */
+	public Object[] toArray(boolean mantainQuotes) {
+		if(mantainQuotes)
+			return super.toArray();
+		else
+			return this.toArray();
+	}
+	
+	/**
+	 * Obtains the JSONArray value literals as an Object array<br>
+	 */
+	@Override
+	public Object[] toArray() {
+		final Object[] parsed = new Object[this.size()];
+		for(int i=0; i<this.size(); i++)
+			parsed[i] = get(i);
+		return parsed;
+	}
+	
+	@Override
+	public Iterator<Object> iterator() {
+		final ArrayList<Object> parsed = new ArrayList<>(this.size());
+		for(int i=0; i<this.size(); i++)
+			parsed.add(get(i));
+		return parsed.iterator();
 	}
 	
 

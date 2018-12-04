@@ -4,7 +4,6 @@
 package es.ed0.jsonlib;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 	private static final long serialVersionUID = -6961839899528603878L;
@@ -24,14 +23,11 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 	 * @return Object represented by key, or null value not mapped
 	 */
 	public Object get(String key) {
-		final Object o = get(key);
-		
-		try {
-			return get(Integer.valueOf(key));
-		} catch (NumberFormatException e) {
-			return null;
-		}
+		return JSONParser.escapeQuotes(super.get(key), true);
 	}
+	
+	
+	
 	/* (non-Javadoc)
 	 * @see es.ed0.jsonlib.JSONEntity#get(java.lang.String[])
 	 */
@@ -178,11 +174,6 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 		return sb.append("}").toString();
 	}
 	
-	
-	public byte[] getByteArray() {
-		return this.toString().getBytes();
-	}
-
 
 
 	/* (non-Javadoc)

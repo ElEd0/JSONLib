@@ -18,9 +18,9 @@ public class Main {
 		
 		
 		
-        JSONObject j = JSONParser.parseJSONObjectFromString("{\"key1\"   :   \"string {} []  value 1\",\"key2\":\"stringvalue2\",\"int1\":\"12\",\"int2\":\"12.2\"\r\n" + 
+        JSONObject j = JSONParser.parseJSONObject("{\"key1\"   :   \"string {} []  value 1\",\"key2\":\"stringvalue2\",\"int1\":\"12\",\"int2\":\"12.2\"\r\n" + 
         		",\"int3\":12.3,\"boolean1\":\"true\"    ,   \"boolean2\":true,\"boolean3\":false,\"json1\":{\"json_key1\":\"StRing_VaLuE\","
-        		+ "\"json_key2\":\"StRing_VaLuE_part_two\", \"array1\":[3, \"string test\", 23.4, \"12.2\", false],\"end\":{\"key2\":\"stringvalue2\"}}}") ;
+        		+ "\"json_key2\":\"StRing_VaLuE_part_two\", \"array1\":[3, \"string test\", 23.4, \"12.2\", false],\"end\":{\"key2\":\"stringvalue3\"}}}") ;
 
         System.out.println(j.size());
 
@@ -30,6 +30,7 @@ public class Main {
         }
         
         JSONObject j2 = j.getJSONObject("json1");
+        JSONObject j3 = j2.getJSONObject("end");
 
 
         System.out.println("JSON2-----------");
@@ -44,8 +45,9 @@ public class Main {
         	System.out.println(o);
         }
         
-        System.out.println(j.get("json1", "array1", "key2"));
-        
+        System.out.println(j.get("json1", "end", "key2"));
+
+        System.out.println(j3.get("key2"));
         /*
         
         j.put("key1", 123);

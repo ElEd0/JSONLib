@@ -4,18 +4,14 @@
 package es.ed0.jsonlib;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.regex.Pattern;
 
 
 public class JSONParser {
 	
-	public static final int OBJECT = 0, ARRAY = 1, ERROR = -1; 
-	
+	public static final int OBJECT = 0, ARRAY = 1, ERROR = -1;
 	
 	
 	public abstract static class Configuration {
-		
 		
 		/** True will remove the quotes from non-string types<br>
 		 * "key1":"12","key2":"true","key3":"hello"<br>
@@ -25,7 +21,7 @@ public class JSONParser {
 		public final static boolean REMOVE_QUOTES_FROM_VALUES = false;
 	}
 	
-	public static JSONObject parseJSONObjectFromString(String raw) throws JSONException {
+	public static JSONObject parseJSONObject(String raw) throws JSONException {
 		if(!(raw.startsWith("{") && raw.endsWith("}")))
 			throw new JSONException("JSON String must be encapsulated in braces { }");
 		final JSONEntity e = parseString(raw);
@@ -34,7 +30,7 @@ public class JSONParser {
 		throw new JSONException("JSON Could not be parsed: Unknown reasons");
 	}
 
-	public static JSONArray parseJSONArrayFromString(String raw) throws JSONException {
+	public static JSONArray parseJSONArray(String raw) throws JSONException {
 		if(!(raw.startsWith("[") && raw.endsWith("]")))
 			throw new JSONException("JSON String must be encapsulated in braces [ ]");
 		JSONEntity e = parseString(raw);
@@ -54,8 +50,6 @@ public class JSONParser {
 			isArray = false;
 		else if(raw.startsWith("[") && raw.endsWith("]"))
 			isArray = true;
-		else
-			return null;
 		
 
 		//remove head + tail
@@ -81,7 +75,6 @@ public class JSONParser {
 			if(!inScope && (c == '{' || c == '[' || c == '"')) {
 				openingChar = c;
 				inScope = true;
-				
 				System.out.println("opening scope with char "+c+" at pos "+i);
 				
 			}
@@ -153,7 +146,7 @@ public class JSONParser {
 				value = kandv[0];
 			} else {
 				//if is jsonobject remove quotes from key
-				kandv[0] = getValueFromString(kandv[0]);
+				kandv[0] = escapeQuotes(kandv[0], true).toString();
 				value = kandv[1];
 			}
 			
@@ -162,12 +155,11 @@ public class JSONParser {
 			Object toAdd = null;
 			
 			if(value.startsWith("{"))
-				toAdd = parseJSONObjectFromString(value);
+				toAdd = parseJSONObject(value);
 			else if(value.startsWith("["))
-				toAdd = parseJSONArrayFromString(value);
+				toAdd = parseJSONArray(value);
 			else
-				toAdd = (Configuration.REMOVE_QUOTES_FROM_VALUES ?
-						getValueFromString(value) : value);
+				toAdd = escapeQuotes(value, Configuration.REMOVE_QUOTES_FROM_VALUES);;
 			
 			if(isArray)
 				((JSONArray) result).add(toAdd);
@@ -193,24 +185,16 @@ public class JSONParser {
 	}
 	
 	/**
-	 * Removes the quotes if any from the value
-	 * @param seq
-	 * @return
-	 */
-	public static String getValueFromString(String seq) {
-		if(seq.startsWith("\"") && seq.endsWith("\""))
-			return seq.substring(seq.indexOf("\"") + 1, seq.length() - 1);
-		return seq;
-	}
-
-	/**
 	 * Removes the quotes if any from the value, 
 	 * unless removeNonStringQuotes specified false and seq is a numerical or boolean value
 	 * in which case it will return the quoted value
 	 * @param seq
 	 * @return
 	 */
-	public static String escapeQuotes(String seq, boolean removeNonStringQuotes) {
+	public static Object escapeQuotes(Object obj, boolean removeNonStringQuotes) {
+		if(obj == null)
+			return null;
+		final String seq = obj.toString();
 		if(seq.startsWith("\"") && seq.endsWith("\"")) {
 			final String parsed = seq.substring(seq.indexOf("\"") + 1, seq.length() - 1);
 			if(!removeNonStringQuotes) {
@@ -225,11 +209,11 @@ public class JSONParser {
 					}
 				}
 				
-				return seq;
+				return seq; // value with quotes
 			}
-			return parsed;
+			return parsed; // removed all quotes
 		}
-		return seq;
+		return obj;// no quotes -> return obj
 	}
 	
 	public static char getEndingTokenForScope(char c) {
@@ -243,34 +227,20 @@ public class JSONParser {
 		
 	}
 	
-	
-	public static boolean validateJSON(String raw) {
-		if(!(raw.startsWith("{") && raw.endsWith("}")))
-			return false;
-		String raw1 = raw.substring(1, raw.length()-1);
-		String[] entries = raw1.split(",");
-		for(String entry : entries) {
-			String[] kandv = entry.split(":");
-			if(kandv.length<2)
-				return false;
-			if(!(checkAsterisks(kandv[0]) && checkAsterisks(kandv[1])))
-				return false;
-		}
-		
-		return true;
-	}
-	
-	
-	public static boolean validateArray(String raw) {
-		if(!(raw.startsWith("[") && raw.endsWith("]")))
-			return false;
-		String raw1 = raw.substring(1, raw.length()-1);
-		String[] entries = raw1.split(";");
-		for(String entry : entries) {
-			if(!validateJSON(entry))
-				return false;
-		}
-		return true;
+
+	/**
+	 * Return type of object (jsonObject or jsonArray) as int</br>
+	 * Constants:</br>
+	 * JSONValidator.OBJECT, JSONValidator.ARRAY, JSONValidator.ERROR 
+	 * @param raw
+	 * @return
+	 */
+	public static int getJsonType(Object obj) {
+		if(obj instanceof JSONObject)
+			return JSONParser.OBJECT;
+		else if (obj instanceof JSONArray)
+			return JSONParser.ARRAY;
+		return JSONParser.ERROR;
 	}
 	
 	/**
@@ -280,16 +250,11 @@ public class JSONParser {
 	 * @param raw
 	 * @return
 	 */
-	public static int jsonType(String raw) {
+	public static int getJsonType(String raw) {
 		if(raw.startsWith("{"))
 			return JSONParser.OBJECT;
 		else if (raw.startsWith("["))
 			return JSONParser.ARRAY;
 		return JSONParser.ERROR;
 	}
-	
-	private static boolean checkAsterisks(String ch) {
-		return ch.startsWith("\"") && ch.endsWith("\"");
-	}
-
 }
