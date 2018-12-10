@@ -186,7 +186,7 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 	
 
 	public HashMap<String, String> asMap() {
-		final HashMap<String, String> ret = new HashMap<>();
+		final HashMap<String, String> ret = new HashMap<String, String>();
 		for(Entry<String, Object> entry : this.entrySet())
 			ret.put(entry.getKey(), entry.getValue().toString());
 		
@@ -198,7 +198,6 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 	 */
 	@Override
 	public byte[] getAsByteArray() {
-		// TODO Auto-generated method stub
 		return toString().getBytes();
 	}
 

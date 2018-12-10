@@ -173,7 +173,7 @@ public class JSONParser {
 			else if(value.startsWith("["))
 				toAdd = parseJSONArray(value);
 			else
-				toAdd = escapeQuotes(value, Configuration.REMOVE_QUOTES_FROM_VALUES);;
+				toAdd = escapeQuotes(value, Configuration.REMOVE_QUOTES_FROM_VALUES);
 			
 			if(isArray)
 				((JSONArray) result).add(toAdd);
