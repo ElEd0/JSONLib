@@ -144,7 +144,7 @@ public class JSONArray extends ArrayList<Object> implements JSONEntity {
 			// "value",
 			sb.append(obj).append(",");
 		
-		sb.substring(0, sb.length() - 1);
+		sb.setLength(sb.length() - 1);
 		return sb.append("]").toString();
 	}
 	/* (non-Javadoc)

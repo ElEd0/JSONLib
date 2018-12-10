@@ -4,6 +4,8 @@
 package es.ed0.jsonlib;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class JSONParser {
@@ -19,6 +21,18 @@ public class JSONParser {
 		 * "key1":12,"key2":true,"key3":"hello" respectively<br> 
 		 */
 		public final static boolean REMOVE_QUOTES_FROM_VALUES = false;
+	}
+	
+	public static JSONObject parseJSONObject(Map<String, ? extends Object> mappings) {
+		final JSONObject o = new JSONObject();
+		o.putAll(mappings);
+		return o;
+	}
+	
+	public static JSONArray parseJSONArray(List<? extends Object> list) {
+		final JSONArray a = new JSONArray();
+		a.addAll(list);
+		return a;
 	}
 	
 	public static JSONObject parseJSONObject(String raw) throws JSONException {
@@ -75,7 +89,7 @@ public class JSONParser {
 			if(!inScope && (c == '{' || c == '[' || c == '"')) {
 				openingChar = c;
 				inScope = true;
-				System.out.println("opening scope with char "+c+" at pos "+i);
+				//System.out.println("opening scope with char "+c+" at pos "+i);
 				
 			}
 			
@@ -96,7 +110,7 @@ public class JSONParser {
 			if(inScope && openedScopes == 0) {
 				// validate scope and clear buffer
 				
-				System.out.println("saving string: "+buffer.toString()+" to ;s"+strings.size()+" at pos "+i);
+				//System.out.println("saving string: "+buffer.toString()+" to ;s"+strings.size()+" at pos "+i);
 				
 				strings.add(buffer.toString());
 				output = replaceFirst(output, buffer.toString(), ";s" + (strings.size() - 1));
@@ -104,7 +118,7 @@ public class JSONParser {
 				inScope = false;
 				openingChar = 0;
 				
-				System.out.println("Output is now: "+output+"\n");
+				//System.out.println("Output is now: "+output+"\n");
 			}			
 			
 		} /* end for */
@@ -115,7 +129,7 @@ public class JSONParser {
 				.replace("\r\n", "");
 		
 		
-		System.out.println("\nOutput: "+output+"\n\n");
+		//System.out.println("\nOutput: "+output+"\n\n");
 		
 		
 		JSONEntity result = null;

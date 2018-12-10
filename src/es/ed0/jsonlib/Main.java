@@ -1,5 +1,7 @@
 package es.ed0.jsonlib;
 
+import java.util.Map.Entry;
+
 import es.ed0.jsonlib.JSONException;
 
 public class Main {
@@ -45,9 +47,18 @@ public class Main {
         	System.out.println(o);
         }
         
-        System.out.println(j.get("json1", "end", "key2"));
+        System.out.println(j.get("json1"));
 
-        System.out.println(j3.get("key2"));
+        System.out.println("------------------");
+
+		for(Entry<String, String> entry : j.asMap().entrySet())
+			System.out.println(entry.getKey() + " :: " + entry.getValue());
+        
+        System.out.println("------------------");
+
+		for(Entry<String, Object> entry : JSONParser.parseJSONObject(j.asMap()).entrySet())
+			System.out.println(entry.getKey() + " :: " + entry.getValue().toString());
+
         /*
         
         j.put("key1", 123);

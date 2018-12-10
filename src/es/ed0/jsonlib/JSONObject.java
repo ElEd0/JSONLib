@@ -103,8 +103,13 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 		final Object o = get(key);
 		if(o instanceof JSONObject)
 			return (JSONObject) o;
-		else
-			return null;
+		else {
+			try {
+				return JSONParser.parseJSONObject(o.toString());
+			} catch (JSONException e) {
+				return null;
+			}
+		}
 	}
 	
 	/**
@@ -142,6 +147,11 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 		return ret;
 	}
 
+	/**
+	 * Does basically the same as put
+	 * @param key
+	 * @param value
+	 */
 	public void add(String key, Object value) {
 		super.put(key, value);
 	}
@@ -175,6 +185,13 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 	}
 	
 
+	public HashMap<String, String> asMap() {
+		final HashMap<String, String> ret = new HashMap<>();
+		for(Entry<String, Object> entry : this.entrySet())
+			ret.put(entry.getKey(), entry.getValue().toString());
+		
+		return ret;
+	}
 
 	/* (non-Javadoc)
 	 * @see es.ed0.jsonlib.JSONEntity#getAsByteArray()
