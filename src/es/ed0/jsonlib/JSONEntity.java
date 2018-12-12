@@ -6,13 +6,6 @@ package es.ed0.jsonlib;
 
 public interface JSONEntity {
 
-	
-	public abstract static class Type {
-		public static final String JSON_OBJ = "JSONObject";
-		public static final String JSON_ARR = "JSONArray";
-	}
-	
-
 	/**
 	 * Searches for a value recursively, this is handy for getting a value inside multiple nested JSONObjects<br>
 	 * <b>Example: </b>JSONObject json = json1:{key1:"value0",json2:{json3:{key2:"false",value:"I'm a value!"}}}<br>
@@ -27,6 +20,19 @@ public interface JSONEntity {
 	 * @return
 	 */
 	public byte[] getAsByteArray();
+	
+	/**
+	 * Returns a prettified JSON string representing this JSONEntity
+	 * @return
+	 */
+	public String toPrettyString();
+
+	/**
+	 * Returns a prettified JSON string representing this JSONEntity.
+	 * Appending the given String to the beggining of every line
+	 * @return
+	 */
+	public String toPrettyString(String tabs);
 
 	
 }

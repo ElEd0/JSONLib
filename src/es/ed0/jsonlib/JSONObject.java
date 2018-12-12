@@ -201,5 +201,31 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 		return toString().getBytes();
 	}
 
+
+	@Override
+	public String toPrettyString() {
+		return toPrettyString("");
+	}
+	
+	@Override
+	public String toPrettyString(String tabs) {
+		final StringBuilder sb = new StringBuilder("{\n");
+		int c = 0;
+		for(Entry<String, Object> entry : this.entrySet()) {
+			sb.append(tabs + "\t" + entry.getKey() + " : ");
+			final Object obj = entry.getValue();
+			if(obj instanceof JSONEntity)
+				sb.append(((JSONEntity) obj).toPrettyString(tabs + "\t"));
+			else
+				sb.append(obj.toString());
+			if(c != this.size() - 1)
+				sb.append(",");
+			sb.append("\n");
+			c++;
+		}
+		sb.append(tabs + "}");
+		return sb.toString();
+	}
+
 	
 }

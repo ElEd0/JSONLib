@@ -5,6 +5,7 @@ package es.ed0.jsonlib;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 public class JSONArray extends ArrayList<Object> implements JSONEntity {
 	private static final long serialVersionUID = 5931962894418725776L;
@@ -186,6 +187,28 @@ public class JSONArray extends ArrayList<Object> implements JSONEntity {
 			parsed.add(get(i));
 		return parsed.iterator();
 	}
+
+	@Override
+	public String toPrettyString() {
+		return toPrettyString("");
+	}
 	
+	public String toPrettyString(String tabs) {
+		final StringBuilder sb = new StringBuilder("[\n");
+		int c = 0;
+		for(Object entry : this) {
+			sb.append(tabs + "\t");
+			if(entry instanceof JSONEntity)
+				sb.append(((JSONEntity) entry).toPrettyString(tabs + "\t"));
+			else
+				sb.append(entry.toString());
+			if(c != this.size() - 1)
+				sb.append(",");
+			sb.append("\n");
+			c++;
+		}
+		sb.append(tabs + "]");
+		return sb.toString();
+	}
 
 }

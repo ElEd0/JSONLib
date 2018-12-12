@@ -59,6 +59,10 @@ public class Main {
 		for(Entry<String, Object> entry : JSONParser.parseJSONObject(j.asMap()).entrySet())
 			System.out.println(entry.getKey() + " :: " + entry.getValue().toString());
 
+		
+		System.out.println("TO PRETTY STRING------------------");
+		System.out.println(j.toPrettyString());
+		
         /*
         
         j.put("key1", 123);
