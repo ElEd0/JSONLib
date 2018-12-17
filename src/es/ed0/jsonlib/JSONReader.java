@@ -27,6 +27,14 @@ public class JSONReader {
 			this.type = type;
 			this.text = text;
 		}
+		
+		public int getType() {
+			return type;
+		}
+		
+		public String getText() {
+			return text;
+		}
 
 	}
 	
@@ -35,7 +43,9 @@ public class JSONReader {
 	private final int STATUS_READING = 0;
 	private final int STATUS_IN_SCOPE = 1;
 	private final int STATUS_IN_STRING = 2;
+	private final int STATUS_IN_VALUE = 3;
 
+	private ParseConfiguration config;
 	private String json;
 
 	private int pointer = 0;
@@ -43,7 +53,11 @@ public class JSONReader {
 
 	public JSONReader(String json) {
 		this.json = json;
-
+	}
+	
+	public JSONReader(String json, ParseConfiguration config) {
+		this.json = json;
+		this.config = config;
 	}
 
 	private Token nextToken() {
@@ -55,7 +69,7 @@ public class JSONReader {
 			pointerStatus = STATUS_READING;
 		
 		int openedScopes = 0;
-		char scopeCloser = Token.error;
+		char scopeCloser = Token.error, scopeOpener = Token.error;
 		
 		while (!tokenEnd) {
 			char c = nextChar();
@@ -76,7 +90,10 @@ public class JSONReader {
 					break;
 				case Token.json_open: case Token.array_open:
 					pointerStatus = STATUS_IN_SCOPE;
+					scopeOpener = c;
 					scopeCloser = getScopeCloserForScopeOpener(c);
+					openedScopes++;
+					buffer.append(c);
 					break;
 
 				}
@@ -88,15 +105,24 @@ public class JSONReader {
 					if(c == scopeCloser)
 						pointerStatus = STATUS_READING;
 					return new Token(Token.value, buffer.toString());
-					default:
-						buffer.append(c);
-						break;
-
+				default:
+					buffer.append(c);
+					break;
 				}
 			}
 			
 			case STATUS_IN_SCOPE: {
+				if(c == scopeCloser)
+					openedScopes--;
+				else if (c == scopeOpener)
+					openedScopes++;
 				
+				buffer.append(c);
+				
+				if(openedScopes == 0) {
+					pointerStatus = STATUS_STOPPED;
+					return new Token(Token.value, buffer.toString());
+				}
 				break;
 			}
 			
