@@ -174,12 +174,8 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 		final StringBuilder sb = new StringBuilder("{");
 
 		for(Entry<String, Object> entry : this.entrySet())
-			if(entry.getValue().toString().startsWith("{") || entry.getValue().toString().startsWith("["))
-				sb.append("\""+entry.getKey() + "\":" + entry.getValue() + ",");
-			else
-				sb.append("\""+entry.getKey() + "\":\"" + entry.getValue() + "\",");
+			sb.append("\""+entry.getKey() + "\":" + JSONParser.getJsonStringValueForObject(entry.getValue()) + ",");
 			
-		
 		sb.delete(sb.length() - 1, sb.length());
 		return sb.append("}").toString();
 	}
@@ -217,7 +213,7 @@ public class JSONObject extends HashMap<String, Object> implements JSONEntity {
 			if(obj instanceof JSONEntity)
 				sb.append(((JSONEntity) obj).toPrettyString(tabs + "\t"));
 			else
-				sb.append(obj.toString());
+				sb.append(JSONParser.getJsonStringValueForObject(entry.getValue()));
 			if(c != this.size() - 1)
 				sb.append(",");
 			sb.append("\n");

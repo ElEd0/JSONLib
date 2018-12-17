@@ -247,9 +247,37 @@ public class JSONParser {
 	 * @return
 	 */
 	public static String getJsonStringValueForObject(Object obj) {
-		
+		if(obj == null)
+			return "null";
+		else if(obj instanceof Boolean || obj instanceof Integer ||
+				obj instanceof Float || obj instanceof Double ||
+				obj instanceof Long || obj instanceof JSONEntity)
+			return obj.toString();
+		else
+			return "\"" + obj.toString() + "\"";
 	}
 	
+	/**
+	 * Returns a Java object for the given json string text value(quotes should be included).<br>
+	 * Note this value will return quoted numbers and booleans as Strings
+	 * @return
+	 */
+	public static Object getJavaObjectForStringValue(String value) {
+		if(isQuoted(value)) { // if is quoted = String
+			return removeQuotes(value);
+		} else if (value == null || value.equals("null")) {
+			return null;
+		} else if ()
+	}
+	
+	
+	public static boolean isQuoted(String value) {
+		return value == null ? false : value.startsWith("\"") && value.endsWith("\"");
+	}
+	
+	public static String removeQuotes(String value) {
+		return isQuoted(value) ? value.substring(1, value.length() - 1) : value;
+	}
 
 	/**
 	 * Return type of object (jsonObject or jsonArray) as int</br>

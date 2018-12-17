@@ -143,7 +143,7 @@ public class JSONArray extends ArrayList<Object> implements JSONEntity {
 
 		for(Object obj : this)
 			// "value",
-			sb.append(obj).append(",");
+			sb.append(JSONParser.getJsonStringValueForObject(obj)).append(",");
 		
 		sb.setLength(sb.length() - 1);
 		return sb.append("]").toString();
@@ -201,7 +201,7 @@ public class JSONArray extends ArrayList<Object> implements JSONEntity {
 			if(entry instanceof JSONEntity)
 				sb.append(((JSONEntity) entry).toPrettyString(tabs + "\t"));
 			else
-				sb.append(entry.toString());
+				sb.append(JSONParser.getJsonStringValueForObject(entry));
 			if(c != this.size() - 1)
 				sb.append(",");
 			sb.append("\n");
