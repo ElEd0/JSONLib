@@ -241,6 +241,15 @@ public class JSONParser {
 		
 	}
 	
+	/**
+	 * Returns the value to write in a json for the given Object, Note this will add any necessary quotes
+	 * @param obj
+	 * @return
+	 */
+	public static String getJsonStringValueForObject(Object obj) {
+		
+	}
+	
 
 	/**
 	 * Return type of object (jsonObject or jsonArray) as int</br>
