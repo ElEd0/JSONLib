@@ -13,16 +13,6 @@ public class JSONParser {
 	public static final int OBJECT = 0, ARRAY = 1, ERROR = -1;
 	
 	
-	public abstract static class Configuration {
-		
-		/** True will remove the quotes from non-string types<br>
-		 * "key1":"12","key2":"true","key3":"hello"<br>
-		 * would result in<br>
-		 * "key1":12,"key2":true,"key3":"hello" respectively<br> 
-		 */
-		public final static boolean REMOVE_QUOTES_FROM_VALUES = false;
-	}
-	
 	public static JSONObject parseJSONObject(Map<String, ? extends Object> mappings) {
 		final JSONObject o = new JSONObject();
 		o.putAll(mappings);
@@ -36,21 +26,18 @@ public class JSONParser {
 	}
 	
 	public static JSONObject parseJSONObject(String raw) throws JSONException {
-		if(!(raw.startsWith("{") && raw.endsWith("}")))
-			throw new JSONException("JSON String must be encapsulated in braces { }");
-		final JSONEntity e = parseString(raw);
-		if(e instanceof JSONObject)
-			return (JSONObject) e;
-		throw new JSONException("JSON Could not be parsed: Unknown reasons");
+		return JSONReader.build(raw).parseObj();
+	}
+
+	public static JSONObject parseJSONObject(String raw, ParseConfiguration config) throws JSONException {
+		return JSONReader.build(raw, config).parseObj();
 	}
 
 	public static JSONArray parseJSONArray(String raw) throws JSONException {
-		if(!(raw.startsWith("[") && raw.endsWith("]")))
-			throw new JSONException("JSON String must be encapsulated in braces [ ]");
-		JSONEntity e = parseString(raw);
-		if(e instanceof JSONArray)
-			return (JSONArray) e;
-		throw new JSONException("JSON Could not be parsed: Unknown reasons");
+		return JSONReader.build(raw).parseArr();
+	}
+	public static JSONArray parseJSONArray(String raw, ParseConfiguration config) throws JSONException {
+		return JSONReader.build(raw, config).parseArr();
 	}
 	
 	
@@ -173,7 +160,7 @@ public class JSONParser {
 			else if(value.startsWith("["))
 				toAdd = parseJSONArray(value);
 			else
-				toAdd = escapeQuotes(value, Configuration.REMOVE_QUOTES_FROM_VALUES);
+				toAdd = escapeQuotes(value, true);
 			
 			if(isArray)
 				((JSONArray) result).add(toAdd);
@@ -255,19 +242,6 @@ public class JSONParser {
 			return obj.toString();
 		else
 			return "\"" + obj.toString() + "\"";
-	}
-	
-	/**
-	 * Returns a Java object for the given json string text value(quotes should be included).<br>
-	 * Note this value will return quoted numbers and booleans as Strings
-	 * @return
-	 */
-	public static Object getJavaObjectForStringValue(String value) {
-		if(isQuoted(value)) { // if is quoted = String
-			return removeQuotes(value);
-		} else if (value == null || value.equals("null")) {
-			return null;
-		} else if ()
 	}
 	
 	

@@ -6,10 +6,10 @@ package es.ed0.jsonlib;
 public class ParseConfiguration {
 	
 	/**
-	 * Should non-quoted keys be allowed (not recomended)<br><br>
+	 * Should values like numbers or jsons be addmited as values in form of string (not recomended)<br><br>
 	 * Default: false
 	 */
-	private boolean ALLOW_NON_QUOTED_KEYS = false;
+	private boolean LET_KEYS_BE_VALUES = false;
 	/**
 	 * Allow random commas at the end of json bodies. Example: ["value", 3, true,]<br><br>
 	 * Default: false
@@ -38,8 +38,8 @@ public class ParseConfiguration {
 	 */
 	private boolean ALLOW_UPPER_CASE_VALUES = true;
 	
-	public void setAllowNonQuotedKeys(boolean key) {
-		ALLOW_NON_QUOTED_KEYS = key;
+	public void setAllowKeysBeValues(boolean key) {
+		LET_KEYS_BE_VALUES = key;
 	}
 
 	public void setAllowArbitraryCommas(boolean key) {
@@ -62,8 +62,8 @@ public class ParseConfiguration {
 		ALLOW_UPPER_CASE_VALUES = key;
 	}
 	
-	public boolean allowsNonQuotedKeys() {
-		return ALLOW_NON_QUOTED_KEYS;
+	public boolean allowsKeysBeValues() {
+		return LET_KEYS_BE_VALUES;
 	}
 	
 	public boolean allowsArbitraryCommas() {
