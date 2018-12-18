@@ -3,7 +3,7 @@ package es.ed0.jsonlib;
 public class JSONReader {
 
 	private abstract static class C {
-		public static final int error = (char) -1;
+		public static final int end = (char) -1;
 		public static final int colon = ':';
 		public static final int coma = ',';
 		public static final int json_open = '{';
@@ -12,6 +12,13 @@ public class JSONReader {
 		public static final int array_close = ']';
 		public static final int quote = '"';
 		public static final int small_quote = '\'';
+
+		public static final int escape_solidus = '\\';
+		public static final int escape_backspace = '\b';
+		public static final int escape_formfeed = '\f';
+		public static final int escape_newline = '\n';
+		public static final int escape_carriage = '\r';
+		public static final int escape_tab = '\t';
 	}
 	
 	private class Token {
@@ -95,7 +102,7 @@ public class JSONReader {
 	private int pointerStatus = STATUS_STOPPED;
 	
 	private int nextExpectedToken = TOKEN_KEY;
-	private int lastNonSpaceChar = C.error;
+	private int lastNonSpaceChar = C.end;
 	
 
 	
@@ -207,7 +214,7 @@ public class JSONReader {
 
 		
 		int openedScopes = 0;
-		char scopeCloser = C.error, scopeOpener = C.error;
+		char scopeCloser = C.end, scopeOpener = C.end;
 		
 		
 		while (!tokenEnd) {
@@ -215,6 +222,8 @@ public class JSONReader {
 			
 			if(c != ' ')
 				lastNonSpaceChar = c;
+			
+			System.out.println("Reading: " + c + " in status: " + pointerStatus);
 
 			if(pointerStatus == STATUS_STOPPED)
 				pointerStatus = STATUS_READING;
@@ -225,6 +234,12 @@ public class JSONReader {
 			// (: for TOKEN_VALUE or , for TOKEN_KEY)
 			case STATUS_SEARCHING_DIVISOR: {
 				switch(c) {
+				case C.end:
+					pointerStatus = STATUS_STOPPED;
+					if(nextExpectedToken == TOKEN_VALUE)
+						throw generateJSONException("Unexpected end of body");
+					else
+						return null;
 				case ' ':
 					break;
 					//For colons and comas, if they are the specified divisor, it points it out
@@ -241,12 +256,15 @@ public class JSONReader {
 								+ " but found " +  c);
 					
 				}
+				break;
 				
 			}
 			
 			case STATUS_READING: {
 				switch (c) {
-				case C.error:
+				case C.end:
+					pointerStatus = STATUS_STOPPED;
+					return null;
 				case C.colon:
 				case C.coma:
 					throw generateJSONException("Invalid Character found: " + c);
@@ -271,6 +289,7 @@ public class JSONReader {
 					break;
 
 				}
+				break;
 			}
 			
 			case STATUS_IN_VALUE: {
@@ -279,6 +298,9 @@ public class JSONReader {
 				case ' ':
 				case C.colon:
 				case C.coma:
+				case C.array_close:
+				case C.json_close:
+				case C.end:
 					pointerStatus = STATUS_STOPPED;
 					//if buffer has some text it could be from a value
 					if(buffer.length() > 0)
@@ -289,11 +311,14 @@ public class JSONReader {
 					buffer.append(c);
 					break;
 				}
-				
+				break;				
 			}
 			
 			case STATUS_IN_STRING: {
 				switch (c) {
+				case C.end:
+					pointerStatus = STATUS_STOPPED;
+					throw generateJSONException("Unexpected end of body");
 				case C.quote:
 					if(c == scopeCloser) {
 						pointerStatus = STATUS_SEARCHING_DIVISOR;
@@ -303,9 +328,15 @@ public class JSONReader {
 					buffer.append(c);
 					break;
 				}
+				break;
 			}
 			
 			case STATUS_IN_SCOPE: {
+				if(c == C.end) {
+					pointerStatus = STATUS_STOPPED;
+					throw generateJSONException("Unexpected end of body");
+				}
+					
 				if(c == scopeCloser)
 					openedScopes--;
 				else if (c == scopeOpener)
@@ -322,8 +353,6 @@ public class JSONReader {
 			
 			
 			}
-			
-
 
 		}
 
@@ -357,7 +386,7 @@ public class JSONReader {
 		case C.array_open: return C.array_close;
 		case C.json_close: return C.json_open;
 		case C.array_close: return C.array_open;
-		default: return C.error;
+		default: return C.end;
 		}
 	}
 	
@@ -368,10 +397,29 @@ public class JSONReader {
 	}
 	
 	private char nextChar() {
+		System.out.println("Requesting char at pos " + pointer + " for body " +json+" of length " +json.length() );
 		if(hasChars())
-			return json.charAt(pointer++);
+			return escapeBackslash(json.charAt(pointer++));
 		else
-			return (char) C.error;
+			return (char) C.end;
+	}
+	
+	/**
+	 * Changes all backslash escapes to the space character to prevent errors
+	 * @param c
+	 * @return
+	 */
+	private char escapeBackslash(char c) {
+		switch(c) {
+		case C.escape_solidus:
+		case C.escape_backspace:
+		case C.escape_formfeed:
+		case C.escape_newline:
+		case C.escape_carriage:
+		case C.escape_tab:
+			return ' ';
+		default: return c;
+		}
 	}
 	
 	public ParseConfiguration getSettings() {

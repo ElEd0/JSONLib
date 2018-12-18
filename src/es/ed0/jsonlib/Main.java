@@ -31,47 +31,15 @@ public class Main {
         	System.out.println(o + " : " + j.get(o + ""));
         }
         
-        JSONObject j2 = j.getJSONObject("json1");
-        JSONObject j3 = j2.getJSONObject("end");
 
-
-        System.out.println("JSON2-----------");
-        for(Object o : j2.getKeys()) {
-        	System.out.println(o + " : " + j2.get(o + ""));
+        System.out.println("ARRAY1-----------");
+        for(Object o : j.getJSONObject("json1").getJSONArray("array1")) {
+        	System.out.println(o + " -> " + o.getClass().getName());
         }
         
-        JSONArray ja = j2.getJSONArray("array1");
+        System.out.println(j.getJSONObject("json1").getJSONArray("array1").getInt(3));
 
-        System.out.println("ARRAY-----------");
-        for(Object o : ja) {
-        	System.out.println(o);
-        }
         
-        System.out.println(j.get("json1"));
-
-        System.out.println("------------------");
-
-		for(Entry<String, String> entry : j.asMap().entrySet())
-			System.out.println(entry.getKey() + " :: " + entry.getValue());
-        
-        System.out.println("------------------");
-
-		for(Entry<String, Object> entry : JSONParser.parseJSONObject(j.asMap()).entrySet())
-			System.out.println(entry.getKey() + " :: " + entry.getValue().toString());
-
-		
-		System.out.println("TO PRETTY STRING------------------");
-		System.out.println(j.toPrettyString());
-		
-        /*
-        
-        j.put("key1", 123);
-        j.put("key2", "string2");
-
-
-        System.out.println(j.get("key2"));
-
-        */
 		
 	}
 
