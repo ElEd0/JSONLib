@@ -25,16 +25,32 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	
 	public abstract Object get(T t);
 	
+	/**
+	 * @return Count of objects inside this json
+	 */
 	public abstract int size();
 
-	public abstract void add(T t, Object o);
+	public abstract void put(T t, Object o);
 	
 	public abstract boolean isEmpty();
 	
+	public abstract boolean isNull(T t);
+	/**
+	 * Returns a list with all Objects contained inside this json
+	 * @return
+	 */
 	public abstract List<Object> values();
-	
+
+	/**
+	 * Removes the object represented by the given key or index
+	 * @param key
+	 * @return true if the object was found and removed, false otherwise
+	 */
 	public abstract boolean remove(T t);
 	
+	/**
+	 * Removes all data inside the json
+	 */
 	public abstract void clear();
 	
 	
@@ -104,7 +120,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 * Retrieves the JSONObject represented by the given key or index
 	 * @return Object represented by key, null if key is not mapped
 	 */
-	public JSONObject getJSONOject(T t) {
+	public JSONObject getJSONObject(T t) {
 		final Object o = get(t);
 		if(o instanceof JSONObject)
 			return (JSONObject) o;
@@ -147,6 +163,22 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 * @return
 	 */
 	protected abstract String toPrettyString(String tabs);
+	
+	/**
+	 * Returns the opening character for this json<br>
+	 * '{' for jsonObject or '[' for jsonArray
+	 * @see #getClosingChar()
+	 * @return char as int
+	 */
+	public abstract int getOpeningChar();
+	
+	/**
+	 * Returns the closing character for this json<br>
+	 * '}' for jsonObject or ']' for jsonArray
+	 * @see #getOpeningChar()
+	 * @return char as int
+	 */
+	public abstract int getClosingChar();
 
 	
 }

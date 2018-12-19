@@ -1,26 +1,7 @@
 package es.ed0.jsonlib;
 
-public class JSONReader {
+public class Lexer {
 
-	private abstract static class C {
-		public static final int end = (char) -1;
-		public static final int colon = ':';
-		public static final int coma = ',';
-		public static final int json_open = '{';
-		public static final int json_close = '}';
-		public static final int array_open = '[';
-		public static final int array_close = ']';
-		public static final int quote = '"';
-		public static final int small_quote = '\'';
-
-		public static final int escape_solidus = '\\';
-		public static final int escape_backspace = '\b';
-		public static final int escape_formfeed = '\f';
-		public static final int escape_newline = '\n';
-		public static final int escape_carriage = '\r';
-		public static final int escape_tab = '\t';
-	}
-	
 	private class Token {
 		
 		public static final int text = 1;
@@ -30,18 +11,22 @@ public class JSONReader {
 
 		private int type;
 		private String raw;
+		private int startPosition;
 
-		public Token(int type, String raw) {
+		public Token(int type, String raw, int startPosition) {
 			this.type = type;
 			this.raw = raw;
+			this.startPosition = startPosition;
+		}
+		
+		public String toString() {
+			return raw;
 		}
 		
 		
 		public String getString() throws JSONException {
 			if(type != text)
-				throw new JSONException("Invalid key " + raw + " at position " + lastTokenPointer + ". "
-						+ "You can use values as keys if you set to true ParseConfiguration#setAllowKeysBeValues. "
-						+ "THIS IS NOT RECOMMENDED");
+				throw new JSONException("Invalid key " + raw);
 			return raw;
 		}
 		
@@ -68,17 +53,16 @@ public class JSONReader {
 							try {
 								return Double.parseDouble(raw);
 							} catch (NumberFormatException e3) {
-								throw generateJSONException("Invalid value " + raw+ " at position " + lastTokenPointer + ". "
-										+ "Value case sensitivity can be changed in ParseConfiguration#setAllowUpperCaseValues");
+								throw new JSONException(previousLength + startPosition, "Invalid value " + raw);
 							}
 						}
 					}
 				
 			case json:
-				return new JSONReader(previousLength + pointer, raw, config).parse();
+				return new Lexer(previousLength + startPosition, raw, config).parse();
 				
 				default:
-					throw generateJSONException("Could not parse value " + raw);
+					throw new JSONException(previousLength + startPosition, "Could not parse value " + raw);
 			}
 		}
 		
@@ -106,23 +90,23 @@ public class JSONReader {
 	
 
 	
-	public static JSONReader build(String json) {
-		return new JSONReader(json);
+	public static Lexer build(String json) {
+		return new Lexer(json);
 	}
 
-	public static JSONReader build(String json, ParseConfiguration config) {
-		return new JSONReader(json, config);
+	public static Lexer build(String json, ParseConfiguration config) {
+		return new Lexer(json, config);
 	}
 	
-	private JSONReader(String json) {
+	private Lexer(String json) {
 		this(0, json, new ParseConfiguration());
 	}
 	
-	private JSONReader(String json, ParseConfiguration config) {
+	private Lexer(String json, ParseConfiguration config) {
 		this(0, json, config);
 	}
 
-	private JSONReader(int previousLength, String json, ParseConfiguration config) {
+	private Lexer(int previousLength, String json, ParseConfiguration config) {
 		this.previousLength = previousLength;
 		this.json = json.trim();
 		this.config = config;
@@ -153,7 +137,7 @@ public class JSONReader {
 			
 			if(key == null) {
 				if(hasChars())
-					throw new JSONException("Invalid key (null) at token position " + lastTokenPointer);
+					throw new JSONException(lastTokenPointer , "Invalid key (null)");
 				continue;
 			}
 			
@@ -167,10 +151,10 @@ public class JSONReader {
 			final Token value = nextToken();
 
 			if(value == null) 
-				throw new JSONException("Invalid value (null) at token position " + lastTokenPointer);
+				throw new JSONException(lastTokenPointer, "Invalid value (null)");
 			
 			
-			obj.add(keyString, value.getValue());
+			obj.put(keyString, value.getValue());
 		}
 		
 		// if status is reading then json didnt finished as expected, probably , at the end of body
@@ -192,12 +176,14 @@ public class JSONReader {
 			nextExpectedToken = TOKEN_KEY;
 			final Token value = nextToken();
 			
+			
 			if(value == null) {
 				if(hasChars())
-					throw new JSONException("Invalid key (null) at token position " + lastTokenPointer);
+					throw new JSONException(lastTokenPointer, "Invalid value (null)");
 				continue;
 			}
-			
+
+			System.out.println("JSONARRAY-> readed token " + value.raw);
 			obj.add(value.getValue());
 		}
 		
@@ -208,7 +194,6 @@ public class JSONReader {
 
 	private Token nextToken() throws JSONException {
 		lastTokenPointer = pointer;
-		boolean tokenEnd = false;
 
 		final StringBuffer buffer = new StringBuffer();
 
@@ -217,16 +202,19 @@ public class JSONReader {
 		char scopeCloser = C.end, scopeOpener = C.end;
 		
 		
-		while (!tokenEnd) {
+		boolean inString = false;
+		
+		while (hasChars()) {
 			char c = nextChar();
 			
 			if(c != ' ')
 				lastNonSpaceChar = c;
 			
-			System.out.println("Reading: " + c + " in status: " + pointerStatus);
 
 			if(pointerStatus == STATUS_STOPPED)
 				pointerStatus = STATUS_READING;
+
+			System.out.println("->"+ pointer + "  Reading: " + c + " in status: " + pointerStatus);
 			
 			switch (pointerStatus) {
 
@@ -237,7 +225,7 @@ public class JSONReader {
 				case C.end:
 					pointerStatus = STATUS_STOPPED;
 					if(nextExpectedToken == TOKEN_VALUE)
-						throw generateJSONException("Unexpected end of body");
+						throw new JSONException(previousLength + pointer, "Unexpected end of body");
 					else
 						return null;
 				case ' ':
@@ -252,7 +240,7 @@ public class JSONReader {
 					}
 					default:
 						pointerStatus = STATUS_STOPPED;
-						throw generateJSONException("Expected to find " + ((char) nextExpectedToken)
+						throw new JSONException(previousLength + pointer, "Expected to find " + ((char) nextExpectedToken)
 								+ " but found " +  c);
 					
 				}
@@ -267,7 +255,7 @@ public class JSONReader {
 					return null;
 				case C.colon:
 				case C.coma:
-					throw generateJSONException("Invalid Character found: " + c);
+					throw new JSONException(previousLength + pointer, "Invalid Character found: " + c);
 				case C.quote:
 					pointerStatus = STATUS_IN_STRING;
 					scopeOpener = c;
@@ -304,9 +292,9 @@ public class JSONReader {
 					pointerStatus = STATUS_STOPPED;
 					//if buffer has some text it could be from a value
 					if(buffer.length() > 0)
-						return new Token(Token.value, buffer.toString());
+						return new Token(Token.value, buffer.toString(), pointer - buffer.length());
 					else
-						throw generateJSONException("Invalid char " + c);
+						throw new JSONException(previousLength + pointer, "Invalid char " + c);
 				default:
 					buffer.append(c);
 					break;
@@ -318,11 +306,11 @@ public class JSONReader {
 				switch (c) {
 				case C.end:
 					pointerStatus = STATUS_STOPPED;
-					throw generateJSONException("Unexpected end of body");
+					throw new JSONException(previousLength + pointer, "Unexpected end of body");
 				case C.quote:
 					if(c == scopeCloser) {
 						pointerStatus = STATUS_SEARCHING_DIVISOR;
-						return new Token(Token.text, buffer.toString());
+						return new Token(Token.text, buffer.toString(), pointer - buffer.length());
 					}
 				default:
 					buffer.append(c);
@@ -332,31 +320,39 @@ public class JSONReader {
 			}
 			
 			case STATUS_IN_SCOPE: {
-				if(c == C.end) {
+				switch(c) {
+				case C.end:
 					pointerStatus = STATUS_STOPPED;
-					throw generateJSONException("Unexpected end of body");
-				}
+					throw new JSONException(previousLength + pointer, "Unexpected end of body");
+				case C.quote:
+					inString = !inString;
+					System.out.println("Reading inside a scope, inString -> " + inString);
+				default:
+					if(!inString) {
+						if(c == scopeCloser)
+							openedScopes--;
+						else if (c == scopeOpener)
+							openedScopes++;
+					}
 					
-				if(c == scopeCloser)
-					openedScopes--;
-				else if (c == scopeOpener)
-					openedScopes++;
-				
-				buffer.append(c);
-				
-				if(openedScopes == 0) {
-					pointerStatus = STATUS_SEARCHING_DIVISOR;
-					return new Token(Token.json, buffer.toString());
+					buffer.append(c);
+					
+					if(openedScopes == 0) {
+						pointerStatus = STATUS_SEARCHING_DIVISOR;
+						return new Token(Token.json, buffer.toString(), pointer - buffer.length());
+					}
+					break;
 				}
-				break;
 			}
 			
 			
 			}
 
 		}
-
-		return null;
+		
+		if(buffer.length() < 1)
+			return null;
+		return new Token(Token.value, buffer.toString(), pointer - buffer.length());
 	}
 	
 	
@@ -367,16 +363,11 @@ public class JSONReader {
 		if(pointerStatus == STATUS_READING) {
 			// if status is reading then json didnt finished as expected, probably , at the end of body
 			if(lastNonSpaceChar == C.coma && !config.allowsArbitraryCommas()) {
-				throw new JSONException("Found ',' at end of body (" + lastTokenPointer + "). "
-						+ "Allow this via ParseConfiguration#setAllowArbitraryCommas");
+				throw new JSONException(lastTokenPointer, "Found ',' at end of body",
+						"Allow this via ParseConfiguration#setAllowArbitraryCommas");
 			}
 		}
 	}
-	
-	private JSONException generateJSONException(String msg) {
-		return new JSONException("Error parsing at position " + (previousLength + pointer) + ": " + msg);
-	}
-	
 	
 	private char getOppositeScopeChar(char c) {
 		switch(c) {
@@ -397,7 +388,7 @@ public class JSONReader {
 	}
 	
 	private char nextChar() {
-		System.out.println("Requesting char at pos " + pointer + " for body " +json+" of length " +json.length() );
+		// System.out.println("Requesting char at pos " + pointer + " for body " +json+" of length " +json.length() );
 		if(hasChars())
 			return escapeBackslash(json.charAt(pointer++));
 		else
