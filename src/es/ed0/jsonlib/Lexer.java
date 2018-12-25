@@ -202,7 +202,7 @@ public class Lexer {
 		char scopeCloser = C.end, scopeOpener = C.end;
 		
 		
-		boolean inString = false;
+		boolean inString = false, escapeThisChar = false;
 		
 		while (hasChars()) {
 			char c = nextChar();
@@ -210,6 +210,9 @@ public class Lexer {
 			if(c != ' ')
 				lastNonSpaceChar = c;
 			
+			// TODO if this char is the escape '\' indicator
+			// note it for the next char
+			escapeThisChar = (c == C.escape_solidus);
 
 			if(pointerStatus == STATUS_STOPPED)
 				pointerStatus = STATUS_READING;
@@ -402,16 +405,18 @@ public class Lexer {
 	 */
 	private char escapeBackslash(char c) {
 		switch(c) {
-		case C.escape_solidus:
 		case C.escape_backspace:
 		case C.escape_formfeed:
 		case C.escape_newline:
 		case C.escape_carriage:
 		case C.escape_tab:
 			return ' ';
+		case C.escape_solidus:
 		default: return c;
 		}
 	}
+	
+	
 	
 	public ParseConfiguration getSettings() {
 		return config;
