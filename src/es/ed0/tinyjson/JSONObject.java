@@ -12,6 +12,7 @@ import java.util.Set;
 import es.ed0.tinyjson.parser.C;
 import es.ed0.tinyjson.parser.JSONParser;
 
+@SuppressWarnings("rawtypes")
 public class JSONObject extends JSONEntity<String> {
 	
 	private final Map<String, Object> map;

@@ -10,6 +10,7 @@ import java.util.List;
 import es.ed0.tinyjson.parser.C;
 import es.ed0.tinyjson.parser.JSONParser;
 
+@SuppressWarnings("rawtypes")
 public class JSONArray extends JSONEntity<Integer> {
 
 	final ArrayList<Object> list;

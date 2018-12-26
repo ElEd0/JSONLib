@@ -7,70 +7,6 @@ import es.ed0.tinyjson.JSONObject;
 
 public class Lexer {
 
-	private class Token {
-		
-		public static final int text = 1;
-		public static final int value = 2;
-		public static final int json = 4;
-
-
-		private int type;
-		private String raw;
-		private int startPosition;
-
-		public Token(int type, String raw, int startPosition) {
-			this.type = type;
-			this.raw = raw;
-			this.startPosition = startPosition;
-		}
-		
-		public String toString() {
-			return raw;
-		}
-		
-		
-		public String getString() throws JSONException {
-			if(type != text)
-				throw new JSONException("Invalid key " + raw);
-			return raw;
-		}
-		
-		
-		public Object getValue() throws JSONException {
-			switch(this.type) {
-			
-			case text: return raw;
-			
-			case value:
-				if(config.allowsUpperCaseValues())
-					raw = raw.toLowerCase();
-				if(raw.equals("null"))// is null
-					return null;
-				else if (raw.equals("true") || raw.equals("false"))// is boolean
-					return Boolean.valueOf(raw);
-				else {
-					
-					// check if value is number, if it is not, no more options left bad boy
-					final Number num = JSONParser.parseNumber(raw);
-					if(num == null)
-						throw new JSONException(previousLength + startPosition, "Invalid value " + raw);
-					else if(!config.allowsExponential() && (raw.contains("e") || raw.contains("E")))
-							throw new JSONException(previousLength + startPosition, "Exponential is not allowed in the configuration!",
-									"You can enable it setting to true ParseConfiguration#setAllowExponential (default: true)");
-					else
-						return num;
-				}
-				
-			case json:
-				return new Lexer(previousLength + startPosition, raw, config).parse();
-				
-				default:
-					throw new JSONException(previousLength + startPosition, "Could not parse value " + raw);
-			}
-		}
-		
-	}
-	
 	
 	private final int TOKEN_KEY = C.coma, TOKEN_VALUE = C.colon;
 	
@@ -101,22 +37,22 @@ public class Lexer {
 		return new Lexer(json, config);
 	}
 	
-	private Lexer(String json) {
+	protected Lexer(String json) {
 		this(0, json, new ParseConfiguration());
 	}
 	
-	private Lexer(String json, ParseConfiguration config) {
+	protected Lexer(String json, ParseConfiguration config) {
 		this(0, json, config);
 	}
 
-	private Lexer(int previousLength, String json, ParseConfiguration config) {
+	public Lexer(int previousLength, String json, ParseConfiguration config) {
 		this.previousLength = previousLength;
 		this.json = json.trim();
 		this.config = config;
 	}
 	
 	
-	public JSONEntity parse() throws JSONException {		
+	public JSONEntity<? extends Object> parse() throws JSONException {		
 		if(json.startsWith("{") && json.endsWith("}"))
 			return parseObj();
 		else if (json.startsWith("[") && json.endsWith("]"))
@@ -190,7 +126,6 @@ public class Lexer {
 				continue;
 			}
 
-			System.out.println("JSONARRAY-> readed token " + value.raw);
 			final Object realValue = value.getValue();
 			
 			if(!(!config.parseNulls() && realValue == null))
@@ -318,7 +253,7 @@ public class Lexer {
 					pointerStatus = STATUS_STOPPED;
 					//if buffer has some text it could be from a value
 					if(buffer.length() > 0)
-						return new Token(Token.value, buffer.toString(), pointer - buffer.length());
+						return new Token(config, Token.value, buffer.toString(), previousLength + pointer - buffer.length());
 					else
 						throw new JSONException(previousLength + pointer, "Invalid char " + c);
 				default:
@@ -341,7 +276,7 @@ public class Lexer {
 				case C.quote:
 					if(inEscape == 0 && c == scopeCloser) {
 						pointerStatus = STATUS_SEARCHING_DIVISOR;
-						return new Token(Token.text, buffer.toString(), pointer - buffer.length());
+						return new Token(config, Token.text, buffer.toString(), previousLength + pointer - buffer.length());
 					}
 				default:
 					buffer.append(c);
@@ -370,7 +305,7 @@ public class Lexer {
 					
 					if(openedScopes == 0) {
 						pointerStatus = STATUS_SEARCHING_DIVISOR;
-						return new Token(Token.json, buffer.toString(), pointer - buffer.length());
+						return new Token(config, Token.json, buffer.toString(), previousLength + pointer - buffer.length());
 					}
 					break;
 				}
@@ -383,7 +318,7 @@ public class Lexer {
 		
 		if(buffer.length() < 1)
 			return null;
-		return new Token(Token.value, buffer.toString(), pointer - buffer.length());
+		return new Token(config, Token.value, buffer.toString(), previousLength + pointer - buffer.length());
 	}
 	
 	
