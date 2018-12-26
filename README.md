@@ -18,41 +18,65 @@ Getting Started
 	//Insert objects
 	json.put("key1", 234f);
 	json.put("key2", "value2");
+	json.put("key3", true);
+	json.put("key4", null);
 	
 	//Retrieve objects
-	Float value1 = (Float) json.get("key1");
-	String value2 = (String) json.get("key2");
+	Double value1 = json.getDouble("key1");
+	String value2 = json.getString("key2");
 	
 	
 	JSONArray array = new JSONArray();
-	array.put(json);
-	array.put(json2);
+	array.add(json);
+	array.add(json2);
 	
-	JSONObject ob = array.get(0);
-	JSONObject[] objects = array.getAsArray();
+	JSONObject obj = array.getJSONObject(0);
 	
-	String raw1 = "{\"key5\":\"value5\",\"key4\":\"value4\"}";
+	// search for nested values
+	// {"json1":{"array1":[12.3, "text", {"key3":"value to return"}]}}
+	obj.get("json1", "array1", "2", "key3");
 	
-	ob = new JSONObject(raw);
-	array.put(new JSONObject(raw));
+```
+
+Iterate over values
+---------------
+
+```java
+	// JSONArrays
 	
-	//Use toString to retrieve the raw string
-	String arrayAsRaw = array.toString();
+	for(Object obj : array) {
+		System.out.println(obj.toString());
+	}
 	
-	//and use it to create JSONObjects or JSONArrays
-	JSONArray array2 = new JSONArray(arrayAsRaw);
+	// JSONObjects
 	
-	//remember to handle Exceptions when using raw strings
+	for(Map<String, Object> pair : json.entrySet()) {
+		System.out.println(pair.getKey() + " - " + pair.getValue());
+	}
+	
+	// or...
+	
+	for(String key : json.keySet()) {
+		System.out.println(key + " - " + json.getString(key));
+	}
+```
+
+Parse to or from String
+---------------
+
+```java	
 	JSONObject json;
 	try {
-		json = new JSONObject(raw);
+		json = JSONParser.parseJSONObject(jsonString);
 	} catch (JSONException e) {
 		e.printStackTrace();
 	}
-		
+	
+	//for normal printing
+	System.out.println(json.toString());
 	
 	//for pretty printing
-	System.out.println(array2.toFancyString());
+	System.out.println(json.toPrettyString());
 	
 ```
 

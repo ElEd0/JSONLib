@@ -35,7 +35,7 @@ public class Main {
         		+ "\"json_key2\":\"StRing_Va{LuE_part_two\", \"array1\":[3, \"string test\", [12, 13, 12E+3, null], \"12.2\", false],\"end\":{\"key2\":\"stringvalue3\"}},\"int2\":10}",
         		config) ;
 
-        System.out.println(j.toString());
+        System.out.println(j.getString("keye1"));
 
 		
 	}
