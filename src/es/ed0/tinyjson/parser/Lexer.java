@@ -1,4 +1,9 @@
-package es.ed0.jsonlib;
+package es.ed0.tinyjson.parser;
+
+import es.ed0.tinyjson.JSONArray;
+import es.ed0.tinyjson.JSONEntity;
+import es.ed0.tinyjson.JSONException;
+import es.ed0.tinyjson.JSONObject;
 
 public class Lexer {
 

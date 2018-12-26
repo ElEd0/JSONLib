@@ -1,13 +1,16 @@
 /**
  * Created by Edo in 18 oct. 2017
  */
-package es.ed0.jsonlib;
+package es.ed0.tinyjson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import es.ed0.tinyjson.parser.C;
+import es.ed0.tinyjson.parser.JSONParser;
 
 public class JSONObject extends JSONEntity<String> {
 	

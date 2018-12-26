@@ -1,7 +1,7 @@
 /**
  * Created by Edo in 18 oct. 2017
  */
-package es.ed0.jsonlib;
+package es.ed0.tinyjson;
 
 public class JSONException extends Exception{
 

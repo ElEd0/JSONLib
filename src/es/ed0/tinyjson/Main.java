@@ -1,8 +1,10 @@
-package es.ed0.jsonlib;
+package es.ed0.tinyjson;
 
 import java.util.Map.Entry;
 
-import es.ed0.jsonlib.JSONException;
+import es.ed0.tinyjson.JSONException;
+import es.ed0.tinyjson.parser.JSONParser;
+import es.ed0.tinyjson.parser.ParseConfiguration;
 
 public class Main {
 

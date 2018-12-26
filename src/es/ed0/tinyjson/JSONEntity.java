@@ -1,7 +1,7 @@
 /**
  * Created by Ed0 in 4 dic. 2018
  */
-package es.ed0.jsonlib;
+package es.ed0.tinyjson;
 
 import java.util.Iterator;
 import java.util.List;

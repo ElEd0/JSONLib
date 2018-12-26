@@ -1,11 +1,14 @@
 /**
  * Created by Edo in 18 oct. 2017
  */
-package es.ed0.jsonlib;
+package es.ed0.tinyjson;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import es.ed0.tinyjson.parser.C;
+import es.ed0.tinyjson.parser.JSONParser;
 
 public class JSONArray extends JSONEntity<Integer> {
 

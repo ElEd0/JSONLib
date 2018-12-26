@@ -1,7 +1,7 @@
 /**
  * Created by Ed0 in 18 dic. 2018
  */
-package es.ed0.jsonlib;
+package es.ed0.tinyjson.parser;
 
 public abstract class C {
 	public static final int end = (char) -1;
