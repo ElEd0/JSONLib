@@ -53,4 +53,20 @@ public class JSONParser {
 	}
 	
 	
+	public static Number parseNumber(String raw) {
+		try { // is number
+			return Integer.parseInt(raw);
+		} catch (NumberFormatException e) {
+			try {
+				return Long.parseLong(raw);
+			} catch (NumberFormatException e2) {
+				try {
+					return Double.parseDouble(raw);
+				} catch (NumberFormatException e3) {
+					return null;
+				}
+			}
+		}
+	}
+	
 }

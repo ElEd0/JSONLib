@@ -43,20 +43,18 @@ public class Lexer {
 					return null;
 				else if (raw.equals("true") || raw.equals("false"))// is boolean
 					return Boolean.valueOf(raw);
-				else
-					try { // is number
-						return Integer.parseInt(raw);
-					} catch (NumberFormatException e) {
-						try {
-							return Long.parseLong(raw);
-						} catch (NumberFormatException e2) {
-							try {
-								return Double.parseDouble(raw);
-							} catch (NumberFormatException e3) {
-								throw new JSONException(previousLength + startPosition, "Invalid value " + raw);
-							}
-						}
-					}
+				else {
+					
+					// check if value is number, if it is not, no more options left bad boy
+					final Number num = JSONParser.parseNumber(raw);
+					if(num == null)
+						throw new JSONException(previousLength + startPosition, "Invalid value " + raw);
+					else if(!config.allowsExponential() && (raw.contains("e") || raw.contains("E")))
+							throw new JSONException(previousLength + startPosition, "Exponential is not allowed in the configuration!",
+									"You can enable it setting to true ParseConfiguration#setAllowExponential (default: true)");
+					else
+						return num;
+				}
 				
 			case json:
 				return new Lexer(previousLength + startPosition, raw, config).parse();
@@ -141,20 +139,24 @@ public class Lexer {
 				continue;
 			}
 			
-			String keyString = null;
-			if(config.allowsKeysBeValues())
-				keyString = key.getValue().toString();
-			else
-				keyString = key.getString();
+			String keyString = key.getString();
 			
+			if(config.failOnDuplicateMappings() && obj.containsKey(keyString))
+				throw new JSONException(lastTokenPointer, "Duplicated key -> " + keyString,
+						"You can disable this error setting ParseConfiguration#setFailOnDuplicateMappings to false.");
 			
 			final Token value = nextToken();
 
 			if(value == null) 
 				throw new JSONException(lastTokenPointer, "Invalid value (null)");
 			
+			final Object realValue = value.getValue();
 			
-			obj.put(keyString, value.getValue());
+			if(!(!config.parseNulls() && realValue == null)) {
+				System.out.println("adding value for key: " + keyString);
+				obj.put(keyString, realValue);
+			}
+			
 		}
 		
 		// if status is reading then json didnt finished as expected, probably , at the end of body
@@ -184,7 +186,11 @@ public class Lexer {
 			}
 
 			System.out.println("JSONARRAY-> readed token " + value.raw);
-			obj.add(value.getValue());
+			final Object realValue = value.getValue();
+			
+			if(!(!config.parseNulls() && realValue == null))
+				obj.add(realValue);
+			
 		}
 		
 		checkForHappyEnding();
@@ -192,6 +198,11 @@ public class Lexer {
 		return obj;
 	}
 
+	/**
+	 * Returns the next token for the current json body. or null if end of body was found
+	 * @return
+	 * @throws JSONException
+	 */
 	private Token nextToken() throws JSONException {
 		lastTokenPointer = pointer;
 
@@ -200,9 +211,9 @@ public class Lexer {
 		
 		int openedScopes = 0;
 		char scopeCloser = C.end, scopeOpener = C.end;
+		int inEscape = 0;
 		
-		
-		boolean inString = false, escapeThisChar = false;
+		boolean inString = false;
 		
 		while (hasChars()) {
 			char c = nextChar();
@@ -210,9 +221,16 @@ public class Lexer {
 			if(c != ' ')
 				lastNonSpaceChar = c;
 			
-			// TODO if this char is the escape '\' indicator
-			// note it for the next char
-			escapeThisChar = (c == C.escape_solidus);
+			if(!config.allowsUnknownEscapes() && (inEscape == 1) && !isEscape(c))
+				throw new JSONException(previousLength + pointer, "Unknown escape found -> \\" + c,
+						"You can allow this setting to true ParseConfiguration#setAllowUnknownEscapes (default: true)");
+
+			// if last char was the escape '\' indicator inEscape will be 1
+			// So at the iteration 2 the escape character has already been processed, return to 0
+			if(inEscape == 1)
+				inEscape++;
+			else if (inEscape >= 2)
+				inEscape = 0;
 
 			if(pointerStatus == STATUS_STOPPED)
 				pointerStatus = STATUS_READING;
@@ -310,8 +328,13 @@ public class Lexer {
 				case C.end:
 					pointerStatus = STATUS_STOPPED;
 					throw new JSONException(previousLength + pointer, "Unexpected end of body");
+				case C.solidus:
+					System.out.println("Entered escape");
+					inEscape++;
+					buffer.append(c);
+					break;
 				case C.quote:
-					if(c == scopeCloser) {
+					if(inEscape == 0 && c == scopeCloser) {
 						pointerStatus = STATUS_SEARCHING_DIVISOR;
 						return new Token(Token.text, buffer.toString(), pointer - buffer.length());
 					}
@@ -372,6 +395,34 @@ public class Lexer {
 		}
 	}
 	
+	/**
+	 * Returns true if thus char corresponds to an escape character, being this the character after the \.<br>
+	 * This are: b f n r t \ u "
+	 * @param c
+	 * @return
+	 */
+	private boolean isEscape(char c) {
+		switch(c) {
+		case C.backspace:
+		case C.formfeed:
+		case C.newline:
+		case C.carriage:
+		case C.tab:
+		case C.solidus:
+		case C.unicode:
+		case C.quote:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns the closing character for the given opening character or viceversa<br>
+	 * Example: { returns }. ] returns [. " returns " and so on
+	 * @param c opening or closing character
+	 * @return {@link C#end} if no match found
+	 */
 	private char getOppositeScopeChar(char c) {
 		switch(c) {
 		case C.quote: return C.quote;
@@ -399,7 +450,7 @@ public class Lexer {
 	}
 	
 	/**
-	 * Changes all backslash escapes to the space character to prevent errors
+	 * Changes all blank backslash escapes to the space character to prevent errors
 	 * @param c
 	 * @return
 	 */

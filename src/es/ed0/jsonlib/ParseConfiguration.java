@@ -6,11 +6,6 @@ package es.ed0.jsonlib;
 public class ParseConfiguration {
 	
 	/**
-	 * Should values like numbers or jsons be addmited as values in form of string (not recomended)<br><br>
-	 * Default: false
-	 */
-	private boolean LET_KEYS_BE_VALUES = false;
-	/**
 	 * Allow random commas at the end of json bodies. Example: ["value", 3, true,]<br><br>
 	 * Default: false
 	 */
@@ -37,53 +32,66 @@ public class ParseConfiguration {
 	 * Default: true
 	 */
 	private boolean ALLOW_UPPER_CASE_VALUES = true;
+	/**
+	 * If false, all keys mapped to null are ignored during the parsing,
+	 * making them disappear from the final JSON string representation.<br>
+	 * If true null values will be parsed into the JSON object<br>
+	 * In both cases calling JSONObject#get will return null,
+	 * but functions like JSONObject#containsKey will have a different result<br><br>
+	 * Default: true
+	 */
+	private boolean PARSE_NULLS = true;
 	
-	public void setAllowKeysBeValues(boolean key) {
-		LET_KEYS_BE_VALUES = key;
-	}
 
-	public void setAllowArbitraryCommas(boolean key) {
-		ALLOW_ARBITRARY_COMMAS = key;
-	}
-
-	public void setFailOnDuplicateMappings(boolean key) {
-		FAIL_ON_DUPLICATE_MAPPING = key;
-	}
+	/**
+	 * {@link ParseConfiguration#ALLOW_ARBITRARY_COMMAS}
+	 */
+	public void setAllowArbitraryCommas(boolean key) { ALLOW_ARBITRARY_COMMAS = key; }
+	/**
+	 * {@link ParseConfiguration#FAIL_ON_DUPLICATE_MAPPING}
+	 */
+	public void setFailOnDuplicateMappings(boolean key) { FAIL_ON_DUPLICATE_MAPPING = key; }
+	/**
+	 * {@link ParseConfiguration#ALLOW_UNKNOWN_ESCAPES}
+	 */
+	public void setAllowUnknownEscapes(boolean key) { ALLOW_UNKNOWN_ESCAPES = key; }
+	/**
+	 * {@link ParseConfiguration#ALLOW_EXPONENTIAL}
+	 */
+	public void setAllowExponential(boolean key) { ALLOW_EXPONENTIAL = key; }
+	/**
+	 * {@link ParseConfiguration#ALLOW_UPPER_CASE_VALUES}
+	 */
+	public void setAllowUpperCaseValues(boolean key) { ALLOW_UPPER_CASE_VALUES = key; }
+	/**
+	 * {@link ParseConfiguration#PARSE_NULLS}
+	 */
+	public void setParseNulls(boolean key) { PARSE_NULLS = key; }
 	
-	public void setAllowUnknownEscapes(boolean key) {
-		ALLOW_UNKNOWN_ESCAPES = key;
-	}
 	
-	public void setAllowExponential(boolean key) {
-		ALLOW_EXPONENTIAL = key;
-	}
-
-	public void setAllowUpperCaseValues(boolean key) {
-		ALLOW_UPPER_CASE_VALUES = key;
-	}
-	
-	public boolean allowsKeysBeValues() {
-		return LET_KEYS_BE_VALUES;
-	}
-	
-	public boolean allowsArbitraryCommas() {
-		return ALLOW_ARBITRARY_COMMAS;
-	}
-	
-	public boolean failOnDuplicateMappings() {
-		return FAIL_ON_DUPLICATE_MAPPING;
-	}
-
-	public boolean allowsUnknownEscapes() {
-		return ALLOW_UNKNOWN_ESCAPES;
-	}
-	
-	public boolean allowsExponential() {
-		return ALLOW_EXPONENTIAL;
-	}
-
-	public boolean allowsUpperCaseValues() {
-		return ALLOW_UPPER_CASE_VALUES;
-	}
+	/**
+	 * {@link ParseConfiguration#ALLOW_ARBITRARY_COMMAS}
+	 */
+	public boolean allowsArbitraryCommas() { return ALLOW_ARBITRARY_COMMAS; }
+	/**
+	 * {@link ParseConfiguration#FAIL_ON_DUPLICATE_MAPPING}
+	 */
+	public boolean failOnDuplicateMappings() { return FAIL_ON_DUPLICATE_MAPPING; }
+	/**
+	 * {@link ParseConfiguration#ALLOW_UNKNOWN_ESCAPES}
+	 */
+	public boolean allowsUnknownEscapes() { return ALLOW_UNKNOWN_ESCAPES; }
+	/**
+	 * {@link ParseConfiguration#ALLOW_EXPONENTIAL}
+	 */
+	public boolean allowsExponential() { return ALLOW_EXPONENTIAL; }
+	/**
+	 * {@link ParseConfiguration#ALLOW_UPPER_CASE_VALUES}
+	 */
+	public boolean allowsUpperCaseValues() { return ALLOW_UPPER_CASE_VALUES; }
+	/**
+	 * {@link ParseConfiguration#PARSE_NULLS}
+	 */
+	public boolean parseNulls() { return PARSE_NULLS; }
 	
 }

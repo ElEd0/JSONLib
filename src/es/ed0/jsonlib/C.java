@@ -20,4 +20,12 @@ public abstract class C {
 	public static final int escape_newline = '\n';
 	public static final int escape_carriage = '\r';
 	public static final int escape_tab = '\t';
+	
+	public static final int solidus = '\\';
+	public static final int backspace = 'b';
+	public static final int formfeed = 'f';
+	public static final int newline = 'n';
+	public static final int carriage = 'r';
+	public static final int tab = 't';
+	public static final int unicode = 'u';
 }

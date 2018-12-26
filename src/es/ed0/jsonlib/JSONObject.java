@@ -91,11 +91,18 @@ public class JSONObject extends JSONEntity<String> {
 		return sb.toString();
 	}
 
-
+	/**
+	 * Returns true if the key is found inside the json
+	 * @param key
+	 */
 	public boolean containsKey(Object key) {
 		return map.containsKey(key);
 	}
 
+	/**
+	 * Returns true if the value is mapped inside the json
+	 * @param key
+	 */
 	public boolean containsValue(Object value) {
 		return map.containsValue(value);
 	}
