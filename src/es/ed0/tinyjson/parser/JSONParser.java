@@ -3,6 +3,9 @@
  */
 package es.ed0.tinyjson.parser;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +44,27 @@ public class JSONParser {
 		return Lexer.build(raw, config).parseArr();
 	}
 	
+	public static JSONObject parseJSONObjectFromFile(String filePath) throws JSONException {
+		return parseJSONObject(readFile(filePath));
+	}
+
+	public static JSONArray parseJSONArrayFromFile(String filePath) throws JSONException {
+		return parseJSONArray(readFile(filePath));
+	}
+	
+	private static String readFile(String path) throws JSONException {
+		StringBuilder sb = new StringBuilder();
+		try {
+			FileReader fr = new FileReader(new File(path));
+			int c = 0;
+			while((c = fr.read()) != -1)
+				sb.append((char) c);
+			fr.close();
+		} catch (IOException e) {
+			throw new JSONException(e);
+		}
+		return sb.toString();
+	}
 	/**
 	 * Returns the value to write in a json for the given Object, Note this will add any necessary quotes
 	 * @param obj

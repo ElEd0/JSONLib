@@ -30,7 +30,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public abstract int size();
 
-	public abstract void put(T t, Object o);
+	public abstract JSONEntity<T> put(T t, Object o);
 	
 	public abstract boolean isEmpty();
 	

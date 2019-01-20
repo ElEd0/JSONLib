@@ -108,8 +108,9 @@ public class JSONArray extends JSONEntity<Integer> {
 	}
 	
 	@Override
-	public void put(Integer t, Object o) {
-		list.add(t, o);		
+	public JSONArray put(Integer t, Object o) {
+		list.add(t, o);
+		return this;
 	}
 
 	@Override

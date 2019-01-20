@@ -41,6 +41,7 @@ public class JSONObject extends JSONEntity<String> {
 			return null;
 	}
 
+	@Override
 	public Object get(String t) {
 		return map.get(t);
 	}
@@ -50,8 +51,10 @@ public class JSONObject extends JSONEntity<String> {
 	 * @param key
 	 * @param value
 	 */
-	public void put(String key, Object value) {
+	@Override
+	public JSONObject put(String key, Object value) {
 		map.put(key, value);
+		return this;
 	}
 	
 	public boolean remove(String key) {

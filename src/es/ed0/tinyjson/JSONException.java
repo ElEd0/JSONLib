@@ -11,12 +11,17 @@ public class JSONException extends Exception{
 		super(msg);
 	}
 	
+	public JSONException(Throwable throwable) {
+		super(throwable.getMessage());
+		setStackTrace(throwable.getStackTrace());
+	}
+	
 	public JSONException(int position, String msg) {
 		this(position, msg, "");
 	}
 	
 	public JSONException(int position, String msg, String suggestion) {
-		super("Error parsing at position " + position + ": " + msg + ". " + suggestion);
+		super("Error parsing at position " + position + ": " + msg + " " + suggestion);
 	}
 	
 	public JSONException() {

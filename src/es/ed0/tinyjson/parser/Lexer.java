@@ -94,7 +94,6 @@ public class Lexer {
 			final Object realValue = value.getValue();
 			
 			if(!(!config.parseNulls() && realValue == null)) {
-				System.out.println("adding value for key: " + keyString);
 				obj.put(keyString, realValue);
 			}
 			
@@ -157,6 +156,9 @@ public class Lexer {
 		
 		while (hasChars()) {
 			char c = nextChar();
+
+			System.out.println("->"+ pointer + "  Reading: " + c + " in status: " + pointerStatus);
+			
 			
 			if(c != ' ')
 				lastNonSpaceChar = c;
@@ -175,7 +177,6 @@ public class Lexer {
 			if(pointerStatus == STATUS_STOPPED)
 				pointerStatus = STATUS_READING;
 
-			System.out.println("->"+ pointer + "  Reading: " + c + " in status: " + pointerStatus);
 			
 			switch (pointerStatus) {
 
@@ -269,7 +270,6 @@ public class Lexer {
 					pointerStatus = STATUS_STOPPED;
 					throw new JSONException(previousLength + pointer, "Unexpected end of body");
 				case C.solidus:
-					System.out.println("Entered escape");
 					inEscape++;
 					buffer.append(c);
 					break;
@@ -290,9 +290,13 @@ public class Lexer {
 				case C.end:
 					pointerStatus = STATUS_STOPPED;
 					throw new JSONException(previousLength + pointer, "Unexpected end of body");
+				case C.solidus:
+					inEscape++;
+					buffer.append(c);
+					break;
 				case C.quote:
-					inString = !inString;
-					System.out.println("Reading inside a scope, inString -> " + inString);
+					if(inEscape == 0)
+						inString = !inString;
 				default:
 					if(!inString) {
 						if(c == scopeCloser)
