@@ -78,9 +78,42 @@ public class JSONParser {
 				obj instanceof Long || obj instanceof JSONEntity)
 			return obj.toString();
 		else
-			return "\"" + obj.toString() + "\"";
+			return "\"" + escape(obj.toString()) + "\"";
 	}
-	
+
+	/**
+	 * Unescapes detected escapes into its counterpart<br>
+	 * I.e: "this is an\\n safe\" str\"ing blabla" -> "this is an\n unsafe" str"ing blabla"
+	 * @param escaped
+	 * @return unescaped
+	 */
+	public static String unescape(String escaped) {
+		return escaped
+				.replace("\\" + ((char) C.quote), "" + (char) C.quote)
+				.replace("\\" + ((char) C.backspace), "" + (char) C.escape_backspace)
+				.replace("\\" + ((char) C.carriage), "" + (char) C.escape_carriage)
+				.replace("\\" + ((char) C.formfeed), "" + (char) C.escape_formfeed)
+				.replace("\\" + ((char) C.newline), "" + (char) C.escape_newline)
+				.replace("\\" + ((char) C.tab), "" + (char) C.escape_tab)
+				.replace("\\" + ((char) C.solidus), "" + (char) C.escape_solidus);
+	}
+
+	/**
+	 * Escapes a value into a safe for sending and parsing string.<br>
+	 * I.e: "this is an\n unsafe" str"ing blabla" -> "this is an\\n unsafe\" str\"ing blabla"
+	 * @param unescaped
+	 * @return escaped
+	 */
+	public static String escape(String unescaped) {
+		return unescaped
+				.replace("" + ((char) C.escape_solidus), "\\" + (char) C.solidus)
+				.replace("" + ((char) C.quote), "\\" + (char) C.quote)
+				.replace("" + ((char) C.escape_backspace), "\\" + (char) C.backspace)
+				.replace("" + ((char) C.escape_carriage), "\\" + (char) C.carriage)
+				.replace("" + ((char) C.escape_formfeed), "\\" + (char) C.formfeed)
+				.replace("" + ((char) C.escape_newline), "\\" + (char) C.newline)
+				.replace("" + ((char) C.escape_tab), "\\" + (char) C.tab);
+	}
 	
 	public static Number parseNumber(String raw) {
 		try { // is number

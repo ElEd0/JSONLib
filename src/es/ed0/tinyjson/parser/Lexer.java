@@ -340,7 +340,7 @@ public class Lexer {
 	}
 	
 	/**
-	 * Returns true if thus char corresponds to an escape character, being this the character after the \.<br>
+	 * Returns true if this char corresponds to an escape character, being this the character after the \.<br>
 	 * This are: b f n r t \ u "
 	 * @param c
 	 * @return
@@ -379,12 +379,20 @@ public class Lexer {
 		}
 	}
 	
+	/**
+	 * Returns true if this lexer has un-readed chars left
+	 * @return if pointer is at the json end
+	 */
 	private boolean hasChars() {
 		if(pointer >= json.length())
 			return false;
 		return true;
 	}
 	
+	/**
+	 * Returns the next char and moves the pointer one position forward
+	 * @return next char or {@link C.end} if no more chars available
+	 */
 	private char nextChar() {
 		// System.out.println("Requesting char at pos " + pointer + " for body " +json+" of length " +json.length() );
 		if(hasChars())

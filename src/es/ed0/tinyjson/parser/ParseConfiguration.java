@@ -16,7 +16,7 @@ public class ParseConfiguration {
 	 */
 	private boolean FAIL_ON_DUPLICATE_MAPPING = false;
 	/**
-	 * Allow unknown escape characters. The known types are: \b \f \n \r \t \" \\ \u0000 <br><br>
+	 * Allow unknown escape characters. The known types are: \b \f \n \r \t \" \\ \u0000* <b>*not atm</b> <br><br>
 	 * Default: true
 	 */
 	private boolean ALLOW_UNKNOWN_ESCAPES = true;
@@ -42,7 +42,18 @@ public class ParseConfiguration {
 	 */
 	private boolean PARSE_NULLS = true;
 	
+	/**
+	 * If true it will replace escaped characters found in strings (see {@link ALLOW_UNKNOWN_ESCAPES} for known escapes list)<br>
+	 * for its unescaped counterpart. I.e: "key1":"whats\\n up" -> "key1":"whats\n up"
+	 * Default: true
+	 */
+	private boolean PARSE_ESCAPED_INTO_UNESCAPED = true;
+	
 
+	/**
+	 * SETTERS
+	 */
+	
 	/**
 	 * {@link ParseConfiguration#ALLOW_ARBITRARY_COMMAS}
 	 */
@@ -67,7 +78,15 @@ public class ParseConfiguration {
 	 * {@link ParseConfiguration#PARSE_NULLS}
 	 */
 	public void setParseNulls(boolean key) { PARSE_NULLS = key; }
+	/**
+	 * {@link ParseConfiguration#PARSE_ESCAPED_INTO_UNESCAPED}
+	 */
+	public void setParseEscapedAsUnescaped(boolean key) { PARSE_ESCAPED_INTO_UNESCAPED = key; }
 	
+
+	/**
+	 * GETTERS
+	 */
 	
 	/**
 	 * {@link ParseConfiguration#ALLOW_ARBITRARY_COMMAS}
@@ -93,5 +112,11 @@ public class ParseConfiguration {
 	 * {@link ParseConfiguration#PARSE_NULLS}
 	 */
 	public boolean parseNulls() { return PARSE_NULLS; }
+	/**
+	 * {@link ParseConfiguration#PARSE_ESCAPED_INTO_UNESCAPED}
+	 */
+	public boolean parseEscapedAsUnescaped() { return PARSE_ESCAPED_INTO_UNESCAPED; } 
+	
+	
 	
 }

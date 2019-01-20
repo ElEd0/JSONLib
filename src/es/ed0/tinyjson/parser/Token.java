@@ -25,6 +25,8 @@ public class Token {
 	}
 	
 	public String toString() {
+		if(config.parseEscapedAsUnescaped())
+			return JSONParser.unescape(raw);
 		return raw;
 	}
 	
@@ -32,14 +34,14 @@ public class Token {
 	public String getString() throws JSONException {
 		if(type != text)
 			throw new JSONException("Invalid key " + raw);
-		return raw;
+		return toString();
 	}
 	
 	
 	public Object getValue() throws JSONException {
 		switch(this.type) {
 		
-		case text: return raw;
+		case text: return toString();
 		
 		case value:
 			if(config.allowsUpperCaseValues())
