@@ -157,7 +157,7 @@ public class Lexer {
 		while (hasChars()) {
 			char c = nextChar();
 
-			System.out.println("->"+ pointer + "  Reading: " + c + " in status: " + pointerStatus);
+			// System.out.println("->"+ pointer + "  Reading: " + c + " in status: " + pointerStatus);
 			
 			
 			if(c != ' ')
