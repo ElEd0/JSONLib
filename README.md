@@ -36,6 +36,11 @@ Getting Started
 	// {"json1":{"array1":[12.3, "text", {"key3":"value to return"}]}}
 	obj.get("json1", "array1", "2", "key3");
 	
+	
+	// quick creation
+	return new JSONObject().put("name", "Foo bar").put("age", 23).toString();
+	
+	
 ```
 
 Iterate over values
