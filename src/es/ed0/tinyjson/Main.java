@@ -1,5 +1,6 @@
 package es.ed0.tinyjson;
 
+import java.util.Map;
 import java.util.Map.Entry;
 
 import es.ed0.tinyjson.JSONException;
@@ -27,7 +28,10 @@ public class Main {
 		config.setFailOnDuplicateMappings(false);
 		config.setParseNulls(false);
 		
+		JSONObject json = new JSONObject();
 		
+		
+		JSONParser.parseJSONObjectFromFile("data.json");
 		
         JSONObject j = JSONParser.parseJSONObject("{\"key1\"   :   \"str\\\"uing } []  value 1\",\"key2\":\"string \\\"valu\\\"e2\",\"int1\":null,\"int2\":\"12.2\"\r\n" + 
         		",\"keye1\":12.3,\"boolean1(string)\":\"true\"    ,   \"boolean2\":true,\"boolean3\":false,\"json1\":{\"json_key1\":\"StRing_VaLuE\","

@@ -22,8 +22,13 @@ Getting Started
 	json.put("key4", null);
 	
 	//Retrieve objects
-	Double value1 = json.getDouble("key1");
-	String value2 = json.getString("key2");
+	String value1 = json.getString("key1");
+	int value2 = json.getInt("key2");
+	double value3 = json.getDouble("key3");
+	long value4 = json.getLong("key4");
+	boolean value5 = json.getBoolean("key5");
+	JSONObject value6 = json.getJSONObject("key6");
+	JSONArray value7 = json.getJSONArray("key7");
 	
 	
 	JSONArray array = new JSONArray();
@@ -55,7 +60,7 @@ Iterate over values
 	
 	// JSONObjects
 	
-	for(Map<String, Object> pair : json.entrySet()) {
+	for(Map.Entry<String, Object> pair : json.entrySet()) {
 		System.out.println(pair.getKey() + " - " + pair.getValue());
 	}
 	
@@ -66,13 +71,16 @@ Iterate over values
 	}
 ```
 
-Parse to or from String
+Parsing
 ---------------
 
 ```java	
-	JSONObject json;
+	JSONObject json, fromFile;
+	JSONArray array;
 	try {
 		json = JSONParser.parseJSONObject(jsonString);
+		array = JSONParser.parseJSONArray(jsonString);
+		fromFile = JSONParser.parseJSONObjectFromFile("data.json");
 	} catch (JSONException e) {
 		e.printStackTrace();
 	}
