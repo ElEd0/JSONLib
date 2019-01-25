@@ -72,8 +72,9 @@ public class JSONObject extends JSONEntity<String> {
 
 		for(Map.Entry<String, Object> entry : entrySet())
 			sb.append("\"" + entry.getKey() + "\":" + JSONParser.getJsonStringValueForObject(entry.getValue()) + ",");
-			
-		sb.delete(sb.length() - 1, sb.length()); // remove last comma
+		
+		if(sb.length() != 1)
+			sb.delete(sb.length() - 1, sb.length()); // remove last comma
 		return sb.append("}").toString();
 	}
 	
