@@ -12,7 +12,9 @@ import java.util.Set;
 import es.ed0.tinyjson.parser.C;
 import es.ed0.tinyjson.parser.JSONParser;
 
-@SuppressWarnings("rawtypes")
+/**
+ * Implementation of JSONEntity for JSONObjects
+ */
 public class JSONObject extends JSONEntity<String> {
 	
 	private final Map<String, Object> map;
@@ -36,7 +38,7 @@ public class JSONObject extends JSONEntity<String> {
 		if(o == null || keys.length == 1)
 			return o;
 		else if (o instanceof JSONEntity) 
-			return ((JSONEntity) o).get(leftOverKeys);
+			return ((JSONEntity<?>) o).get(leftOverKeys);
 		else 
 			return null;
 	}
@@ -46,11 +48,6 @@ public class JSONObject extends JSONEntity<String> {
 		return map.get(t);
 	}
 
-	/**
-	 * Adds the given value and maps it to the given key
-	 * @param key
-	 * @param value
-	 */
 	@Override
 	public JSONObject put(String key, Object value) {
 		map.put(key, value);
@@ -87,7 +84,7 @@ public class JSONObject extends JSONEntity<String> {
 			sb.append(tabs + "\t" + entry.getKey() + " : ");
 			final Object obj = entry.getValue();
 			if(obj instanceof JSONEntity)
-				sb.append(((JSONEntity) obj).toPrettyString(tabs + "\t"));
+				sb.append(((JSONEntity<?>) obj).toPrettyString(tabs + "\t"));
 			else
 				sb.append(JSONParser.getJsonStringValueForObject(entry.getValue()));
 			if(c != this.size() - 1)
@@ -107,10 +104,6 @@ public class JSONObject extends JSONEntity<String> {
 		return map.containsKey(key);
 	}
 
-	/**
-	 * Returns true if the value is mapped inside the json
-	 * @param key
-	 */
 	public boolean containsValue(Object value) {
 		return map.containsValue(value);
 	}
@@ -131,10 +124,6 @@ public class JSONObject extends JSONEntity<String> {
 		return map.keySet();
 	}
 
-	/**
-	 * Returns a Set view of the values contained in this JSONObject
-	 * @return String Set containing all values
-	 */
 	@Override
 	public List<Object> values() {
 		return new ArrayList<Object>(map.values());
@@ -167,7 +156,6 @@ public class JSONObject extends JSONEntity<String> {
 		map.putAll(m);
 	}
 
-
 	@Override
 	public int getOpeningChar() {
 		return C.json_open;
@@ -177,12 +165,6 @@ public class JSONObject extends JSONEntity<String> {
 	public int getClosingChar() {
 		return C.json_close;
 	}
-
-	@Override
-	public boolean isNull(String t) {
-		return get(t) == null;
-	}
-
 
 	
 }

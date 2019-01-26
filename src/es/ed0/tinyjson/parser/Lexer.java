@@ -5,6 +5,10 @@ import es.ed0.tinyjson.JSONEntity;
 import es.ed0.tinyjson.JSONException;
 import es.ed0.tinyjson.JSONObject;
 
+/**
+ * Parser class that reads and converts a String into a usable JSONObject or JSONArray.<br>
+ * This class has a protected access and should not be used directly, for parsing from text to string {@link JSONParser} should be used instead
+ */
 public class Lexer {
 
 	
@@ -27,30 +31,35 @@ public class Lexer {
 	private int nextExpectedToken = TOKEN_KEY;
 	private int lastNonSpaceChar = C.end;
 	
-
 	
-	public static Lexer build(String json) {
-		return new Lexer(json);
-	}
-
-	public static Lexer build(String json, ParseConfiguration config) {
-		return new Lexer(json, config);
-	}
-	
+	/**
+	 * Creates a new Lexer for a brand new JSON with default configuration
+	 * @param json raw string
+	 */
 	protected Lexer(String json) {
 		this(0, json, new ParseConfiguration());
 	}
-	
+
+	/**
+	 * Creates a new Lexer for a brand new JSON with the given configuration
+	 * @param json raw string
+	 * @param config Parse configuration
+	 */
 	protected Lexer(String json, ParseConfiguration config) {
 		this(0, json, config);
 	}
 
-	public Lexer(int previousLength, String json, ParseConfiguration config) {
+	/**
+	 * Creates a new Lexer for a JSON inside a currently parsing json
+	 * @param previousLength starting index of the json inside its parent json
+	 * @param json raw json
+	 * @param config Parse configuration
+	 */
+	protected Lexer(int previousLength, String json, ParseConfiguration config) {
 		this.previousLength = previousLength;
 		this.json = json.trim();
 		this.config = config;
 	}
-	
 	
 	public JSONEntity<? extends Object> parse() throws JSONException {		
 		if(json.startsWith("{") && json.endsWith("}"))
@@ -99,7 +108,7 @@ public class Lexer {
 			
 		}
 		
-		// if status is reading then json didnt finished as expected, probably , at the end of body
+		// if status is reading then json didnt finished as expected, probably ',' at the end of body
 		checkForHappyEnding();
 		
 		return obj;
@@ -139,7 +148,7 @@ public class Lexer {
 
 	/**
 	 * Returns the next token for the current json body. or null if end of body was found
-	 * @return
+	 * @return next token
 	 * @throws JSONException
 	 */
 	private Token nextToken() throws JSONException {
@@ -414,12 +423,9 @@ public class Lexer {
 		case C.escape_carriage:
 		case C.escape_tab:
 			return ' ';
-		case C.escape_solidus:
 		default: return c;
 		}
 	}
-	
-	
 	
 	public ParseConfiguration getSettings() {
 		return config;

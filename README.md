@@ -16,16 +16,19 @@ Getting Started
 	JSONObject json = new JSONObject();
 	
 	//Insert objects
-	json.put("key1", 234f);
-	json.put("key2", "value2");
-	json.put("key3", true);
+	json.put("key1", "value1");
+	json.put("key2", 123);
+	json.put("key3", 12.3);
 	json.put("key4", null);
+	json.put("key5", false);
+	json.put("key6", new JSONObject());
+	json.put("key7", new JSONArray());
 	
 	//Retrieve objects
 	String value1 = json.getString("key1");
 	int value2 = json.getInt("key2");
 	double value3 = json.getDouble("key3");
-	long value4 = json.getLong("key4");
+	long value4 = json.getLong("key4"); /* will fire NullPointerException */
 	boolean value5 = json.getBoolean("key5");
 	JSONObject value6 = json.getJSONObject("key6");
 	JSONArray value7 = json.getJSONArray("key7");
@@ -90,6 +93,23 @@ Parsing
 	
 	//for pretty printing
 	System.out.println(json.toPrettyString());
+	
+```
+
+Parsing configuration
+---------------
+
+```java	
+	ParseConfiguration config = new ParseConfiguration();
+	config.setAllowArbitraryCommas(false);
+	config.setAllowExponential(true);
+	config.setAllowUnknownEscapes(false);
+	config.setAllowUpperCaseValues(true);
+	config.setFailOnDuplicateMappings(true);
+	config.setParseEscapedAsUnescaped(true);
+	config.setParseNulls(true);
+		
+	JSONObject json = JSONParser.parseJSONObject(jsonString, config);
 	
 ```
 

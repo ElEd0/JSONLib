@@ -10,11 +10,16 @@ import java.util.List;
 import es.ed0.tinyjson.parser.C;
 import es.ed0.tinyjson.parser.JSONParser;
 
-@SuppressWarnings("rawtypes")
+/**
+ * Implementation of JSONEntity for JSONArrays
+ */
 public class JSONArray extends JSONEntity<Integer> {
 
 	final ArrayList<Object> list;
 	
+	/**
+	 * Creates a new empty JSONArray
+	 */
 	public JSONArray() {
 		super();
 		list = new ArrayList<Object>();
@@ -38,8 +43,8 @@ public class JSONArray extends JSONEntity<Integer> {
 		}
 		if(o == null || keys.length == 1)
 			return o;
-		else if (o instanceof JSONEntity) 
-			return ((JSONEntity) o).get(leftOverKeys);
+		else if (o instanceof JSONEntity)
+			return ((JSONEntity<?>) o).get(leftOverKeys);
 		else 
 			return null;
 	}
@@ -60,18 +65,21 @@ public class JSONArray extends JSONEntity<Integer> {
 		return sb.append("]").toString();
 	}
 
+	/**
+	 * Returns a prettified version of the JSONArray
+	 */
 	@Override
 	public String toPrettyString() {
 		return toPrettyString("");
 	}
 	
-	public String toPrettyString(String tabs) {
+	protected String toPrettyString(String tabs) {
 		final StringBuilder sb = new StringBuilder("[\n");
 		int c = 0;
 		for(Object entry : this) {
 			sb.append(tabs + "\t");
 			if(entry instanceof JSONEntity)
-				sb.append(((JSONEntity) entry).toPrettyString(tabs + "\t"));
+				sb.append(((JSONEntity<?>) entry).toPrettyString(tabs + "\t"));
 			else
 				sb.append(JSONParser.getJsonStringValueForObject(entry));
 			if(c != this.size() - 1)
@@ -86,14 +94,16 @@ public class JSONArray extends JSONEntity<Integer> {
 
 	@Override
 	public Object get(Integer t) {
-		return list.get(t);
+		try {
+			return list.get(t);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
-
 
 	public boolean containsValue(Object value) {
 		return list.contains(value);
 	}
-
 
 	@Override
 	public int size() {
@@ -119,12 +129,10 @@ public class JSONArray extends JSONEntity<Integer> {
 		return list.isEmpty();
 	}
 
-
 	@Override
 	public List<Object> values() {
 		return list;
 	}
-
 
 	@Override
 	public boolean remove(Integer t) {
@@ -132,7 +140,6 @@ public class JSONArray extends JSONEntity<Integer> {
 		list.remove((int) t);
 		return lastLength != this.size();
 	}
-
 
 	@Override
 	public void clear() {
@@ -149,9 +156,5 @@ public class JSONArray extends JSONEntity<Integer> {
 		return C.array_close;
 	}
 
-	@Override
-	public boolean isNull(Integer t) {
-		return get(t) == null;
-	}
 
 }

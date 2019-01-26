@@ -5,6 +5,11 @@ package es.ed0.tinyjson.parser;
 
 import es.ed0.tinyjson.JSONException;
 
+/**
+ * Object representation of a token inside a json, this can be a text token (a string) a value token (numbers, booleans, etc) 
+ * or a json (JSONObject and JSONArray).<br>
+ * This object is only used during parsing and it cannot be retrieved from a generated JSONObject or JSONArray
+ */
 public class Token {
 
 	public static final int text = 1;

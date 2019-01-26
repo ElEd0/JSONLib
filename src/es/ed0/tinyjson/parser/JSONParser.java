@@ -14,8 +14,10 @@ import es.ed0.tinyjson.JSONEntity;
 import es.ed0.tinyjson.JSONException;
 import es.ed0.tinyjson.JSONObject;
 
-
-public class JSONParser {	
+/**
+ * Utility class for parsing JSONObject and JSONArray from string or files
+ */
+public abstract class JSONParser {
 	
 	public static JSONObject parseJSONObject(Map<String, ? extends Object> mappings) {
 		final JSONObject o = new JSONObject();
@@ -30,18 +32,18 @@ public class JSONParser {
 	}
 	
 	public static JSONObject parseJSONObject(String raw) throws JSONException {
-		return Lexer.build(raw).parseObj();
+		return new Lexer(raw).parseObj();
 	}
 
 	public static JSONObject parseJSONObject(String raw, ParseConfiguration config) throws JSONException {
-		return Lexer.build(raw, config).parseObj();
+		return new Lexer(raw, config).parseObj();
 	}
 
 	public static JSONArray parseJSONArray(String raw) throws JSONException {
-		return Lexer.build(raw).parseArr();
+		return new Lexer(raw).parseArr();
 	}
 	public static JSONArray parseJSONArray(String raw, ParseConfiguration config) throws JSONException {
-		return Lexer.build(raw, config).parseArr();
+		return new Lexer(raw, config).parseArr();
 	}
 	
 	public static JSONObject parseJSONObjectFromFile(String filePath) throws JSONException {
@@ -67,8 +69,8 @@ public class JSONParser {
 	}
 	/**
 	 * Returns the value to write in a json for the given Object, Note this will add any necessary quotes
-	 * @param obj
-	 * @return
+	 * @param obj Object to convert to safe String
+	 * @return the String representation
 	 */
 	public static String getJsonStringValueForObject(Object obj) {
 		if(obj == null)
@@ -83,8 +85,8 @@ public class JSONParser {
 
 	/**
 	 * Unescapes detected escapes into its counterpart<br>
-	 * I.e: "this is an\\n safe\" str\"ing blabla" -> "this is an\n unsafe" str"ing blabla"
-	 * @param escaped
+	 * I.e: "this is an\\n safe\" str\"ing blabla" to "this is an\n unsafe" str"ing blabla"
+	 * @param escaped escaped String
 	 * @return unescaped
 	 */
 	public static String unescape(String escaped) {
@@ -100,8 +102,8 @@ public class JSONParser {
 
 	/**
 	 * Escapes a value into a safe for sending and parsing string.<br>
-	 * I.e: "this is an\n unsafe" str"ing blabla" -> "this is an\\n unsafe\" str\"ing blabla"
-	 * @param unescaped
+	 * I.e: "this is an\n unsafe" str"ing blabla" to "this is an\\n unsafe\" str\"ing blabla"
+	 * @param unescaped unescaped String
 	 * @return escaped
 	 */
 	public static String escape(String unescaped) {
@@ -115,6 +117,11 @@ public class JSONParser {
 				.replace("" + ((char) C.escape_tab), "\\" + (char) C.tab);
 	}
 	
+	/**
+	 * Returns the given raw value in its number form or null if the raw is an invalid number
+	 * @param raw raw number as string
+	 * @return Integer Long or Double representation of the string
+	 */
 	public static Number parseNumber(String raw) {
 		try { // is number
 			return Integer.parseInt(raw);

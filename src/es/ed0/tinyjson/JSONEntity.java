@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Abstract class that defines basic functionality for JSON entities (json objects and arrays)
  * 
- * @param <T> Type of key -> String for JSONS, Integer for Arrays
+ * @param <T> Type of key: String for JSONS, Integer for Arrays
  */
 public abstract class JSONEntity<T> implements Iterable<Object> {
 	
@@ -18,11 +18,16 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 * Searches for a value recursively, this is handy for getting a value inside multiple nested JSONObjects<br>
 	 * <b>Example: </b>JSONObject json = json1:{key1:"value0",json2:{json3:{key2:"false",value:"I'm a value!"}}}<br>
 	 * json.get("json1", "json2", "json3", "value"); Would return "I'm a value!", or null if any of the nodes was not found
-	 * @param keys
-	 * @return
+	 * @param keys Ordered keys
+	 * @return Object mapped by last key
 	 */
 	public abstract Object get(String... keys);
 	
+	/**
+	 * Retrieves the Object mapped by the given key or index
+	 * @param t
+	 * @return
+	 */
 	public abstract Object get(T t);
 	
 	/**
@@ -30,11 +35,28 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public abstract int size();
 
+	/**
+	 * Adds the given object and maps it to the given key or index
+	 * @param t Key or index
+	 * @param o Object to add
+	 * @return this json
+	 */
 	public abstract JSONEntity<T> put(T t, Object o);
 	
+	/**
+	 * @return true if this json contains no objects
+	 */
 	public abstract boolean isEmpty();
 	
-	public abstract boolean isNull(T t);
+	/**
+	 * 
+	 * @param t key or index
+	 * @return true if the object specified by the given key or index is null, or the mapping does not exist
+	 */
+	public boolean isNull(T t) {
+		return get(t) == null;
+	}
+	
 	/**
 	 * Returns a list with all Objects contained inside this json
 	 * @return
@@ -43,7 +65,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 
 	/**
 	 * Removes the object represented by the given key or index
-	 * @param key
+	 * @param t
 	 * @return true if the object was found and removed, false otherwise
 	 */
 	public abstract boolean remove(T t);
@@ -52,7 +74,12 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 * Removes all data inside the json
 	 */
 	public abstract void clear();
-	
+
+	/**
+	 * Returns true if the value is mapped inside the json
+	 * @param value
+	 */
+	public abstract boolean containsValue(Object value);
 	
 	public Iterator<Object> iterator() {
 		return values().iterator();
@@ -60,7 +87,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 
 	/**
 	 * Retrieves the String represented by the given key or index
-	 * @return Object represented by key, null if key is not mapped
+	 * @return String represented by key, null if key is not mapped
 	 */
 	public String getString(T t) {
 		return String.valueOf(get(t));
@@ -68,7 +95,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 
 	/**
 	 * Retrieves the Integer represented by the given key or index
-	 * @return Object represented by key, null if key is not mapped
+	 * @return Integer represented by key, null if key is not mapped
 	 */
 	public Integer getInt(T t) {
 		try {
@@ -80,7 +107,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 
 	/**
 	 * Retrieves the Double represented by the given key or index
-	 * @return Object represented by key, null if key is not mapped
+	 * @return Double represented by key, null if key is not mapped
 	 */
 	public Double getDouble(T t) {
 		try {
@@ -92,7 +119,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 
 	/**
 	 * Retrieves the Long represented by the given key or index
-	 * @return Object represented by key, null if key is not mapped
+	 * @return Long represented by key, null if key is not mapped
 	 */
 	public Long getLong(T t) {
 		try {
@@ -104,7 +131,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 
 	/**
 	 * Retrieves the Boolean represented by the given key or index
-	 * @return Object represented by key, null if key is not mapped
+	 * @return Boolean represented by key, null if key is not mapped
 	 */
 	public Boolean getBoolean(T t) {
 		final String stringValue = getString(t);
@@ -118,7 +145,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 
 	/**
 	 * Retrieves the JSONObject represented by the given key or index
-	 * @return Object represented by key, null if key is not mapped
+	 * @return JSONObject represented by key, null if key is not mapped
 	 */
 	public JSONObject getJSONObject(T t) {
 		final Object o = get(t);
@@ -130,7 +157,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 
 	/**
 	 * Retrieves the JSONArray represented by the given key or index
-	 * @return Object represented by key, null if key is not mapped
+	 * @return JSONArray represented by key, null if key is not mapped
 	 */
 	public JSONArray getJSONArray(T t) {
 		final Object o = get(t);
