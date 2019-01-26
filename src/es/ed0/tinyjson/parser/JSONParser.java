@@ -17,47 +17,100 @@ import es.ed0.tinyjson.JSONObject;
 /**
  * Utility class for parsing JSONObject and JSONArray from string or files
  */
-public abstract class JSONParser {
+public class JSONParser {
+
+	/**
+	 * Retrieves a JSONParser with default configuration
+	 * @return
+	 */
+	public static JSONParser get() {
+		return get(new ParseConfiguration());
+	}
 	
-	public static JSONObject parseJSONObject(Map<String, ? extends Object> mappings) {
+	/**
+	 * Retrieves a JSONParser with the given configurations
+	 * @param config
+	 * @return
+	 */
+	public static JSONParser get(ParseConfiguration config) {
+		return new JSONParser(config);
+	}
+	
+	private ParseConfiguration config;
+	
+	private JSONParser(ParseConfiguration config) {
+		this.config = config;
+	}
+	
+	/**
+	 * Creates a JSONObject from the given list of key-pair values
+	 * @param mappings
+	 * @return
+	 */
+	public JSONObject parseJSONObject(Map<String, ? extends Object> mappings) {
 		final JSONObject o = new JSONObject();
 		o.putAll(mappings);
 		return o;
 	}
 	
-	public static JSONArray parseJSONArray(List<? extends Object> list) {
+	/**
+	 * Creates a JSONArray from teh given list of objects
+	 * @param list
+	 * @return
+	 */
+	public JSONArray parseJSONArray(List<? extends Object> list) {
 		final JSONArray a = new JSONArray();
 		a.addAll(list);
 		return a;
 	}
-	
-	public static JSONObject parseJSONObject(String raw) throws JSONException {
-		return new Lexer(raw).parseObj();
+	/**
+	 * Parse the JSON in the given String
+	 * @param raw raw json
+	 * @return new JSONObject
+	 * @throws JSONException if parsing failed. This could happen by a badly formed json or if the parser detects an
+	 * incompatibility with the current ParseConfiguration
+	 */
+	public JSONObject parseJSONObject(String raw) throws JSONException {
+		return new Lexer(0, raw, this.config).parseObj();
 	}
 
-	public static JSONObject parseJSONObject(String raw, ParseConfiguration config) throws JSONException {
-		return new Lexer(raw, config).parseObj();
+	/**
+	 * Parse the JSON in the given String
+	 * @param raw raw json
+	 * @return new JSONArray
+	 * @throws JSONException if parsing failed. This could happen by a badly formed json or if the parser detects an
+	 * incompatibility with the current ParseConfiguration
+	 */
+	public JSONArray parseJSONArray(String raw) throws JSONException {
+		return new Lexer(0, raw, this.config).parseArr();
 	}
 
-	public static JSONArray parseJSONArray(String raw) throws JSONException {
-		return new Lexer(raw).parseArr();
-	}
-	public static JSONArray parseJSONArray(String raw, ParseConfiguration config) throws JSONException {
-		return new Lexer(raw, config).parseArr();
-	}
-	
-	public static JSONObject parseJSONObjectFromFile(String filePath) throws JSONException {
+	/**
+	 * Parse the JSON saved as plain text in the given file
+	 * @param raw raw json
+	 * @return new JSONObject
+	 * @throws JSONException if parsing failed. This could happen by a badly formed json or if the parser detects an
+	 * incompatibility with the current ParseConfiguration
+	 */
+	public JSONObject parseJSONObjectFromFile(String filePath) throws JSONException {
 		return parseJSONObject(readFile(filePath));
 	}
 
-	public static JSONArray parseJSONArrayFromFile(String filePath) throws JSONException {
+	/**
+	 * Parse the JSON saved as plain text in the given file
+	 * @param raw raw json
+	 * @return new JSONArray
+	 * @throws JSONException if parsing failed. This could happen by a badly formed json or if the parser detects an
+	 * incompatibility with the current ParseConfiguration
+	 */
+	public JSONArray parseJSONArrayFromFile(String filePath) throws JSONException {
 		return parseJSONArray(readFile(filePath));
 	}
 	
 	private static String readFile(String path) throws JSONException {
 		StringBuilder sb = new StringBuilder();
 		try {
-			FileReader fr = new FileReader(new File(path));
+			final FileReader fr = new FileReader(new File(path));
 			int c = 0;
 			while((c = fr.read()) != -1)
 				sb.append((char) c);

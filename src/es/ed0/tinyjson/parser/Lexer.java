@@ -31,24 +31,6 @@ public class Lexer {
 	private int nextExpectedToken = TOKEN_KEY;
 	private int lastNonSpaceChar = C.end;
 	
-	
-	/**
-	 * Creates a new Lexer for a brand new JSON with default configuration
-	 * @param json raw string
-	 */
-	protected Lexer(String json) {
-		this(0, json, new ParseConfiguration());
-	}
-
-	/**
-	 * Creates a new Lexer for a brand new JSON with the given configuration
-	 * @param json raw string
-	 * @param config Parse configuration
-	 */
-	protected Lexer(String json, ParseConfiguration config) {
-		this(0, json, config);
-	}
-
 	/**
 	 * Creates a new Lexer for a JSON inside a currently parsing json
 	 * @param previousLength starting index of the json inside its parent json

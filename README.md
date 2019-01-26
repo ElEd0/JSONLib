@@ -81,9 +81,9 @@ Parsing
 	JSONObject json, fromFile;
 	JSONArray array;
 	try {
-		json = JSONParser.parseJSONObject(jsonString);
-		array = JSONParser.parseJSONArray(jsonString);
-		fromFile = JSONParser.parseJSONObjectFromFile("data.json");
+		json = JSONParser.get().parseJSONObject(jsonString);
+		array = JSONParser.get().parseJSONArray(jsonString);
+		fromFile = JSONParser.get().parseJSONObjectFromFile("data.json");
 	} catch (JSONException e) {
 		e.printStackTrace();
 	}
@@ -109,7 +109,7 @@ Parsing configuration
 	config.setParseEscapedAsUnescaped(true);
 	config.setParseNulls(true);
 		
-	JSONObject json = JSONParser.parseJSONObject(jsonString, config);
+	JSONObject json = JSONParser.get(config).parseJSONObject(jsonString);
 	
 ```
 
