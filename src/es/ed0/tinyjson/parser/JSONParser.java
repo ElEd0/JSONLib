@@ -3,9 +3,13 @@
  */
 package es.ed0.tinyjson.parser;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -105,6 +109,62 @@ public class JSONParser {
 	 */
 	public JSONArray parseJSONArrayFromFile(String filePath) throws JSONException {
 		return parseJSONArray(readFile(filePath));
+	}
+	
+	/**
+	 * Retrieves the JSONObject from the given URL, using the given request method and the request headers
+	 * stored as key-value pairs inside the given JSONObject
+	 * @param url Url to access
+	 * @param method Request method eg: POST, GET, etc. If null GET will be used
+	 * @param headers request headers, stored as key-value pairs. If null no headers will be sent
+	 * @return The parsed JSONObject
+	 * @throws JSONException If the json string cannot be retrieved from the URL or if the parsing of the json failed
+	 */
+	public JSONObject parseJSONObjectFromUrl(URL url, String method, JSONObject headers) throws JSONException {
+		return parseJSONObject(readUrl(url, method, headers));
+	}
+
+	/**
+	 * Retrieves the JSONArray from the given URL, using the given request method and the request headers
+	 * stored as key-value pairs inside the given JSONObject
+	 * @param url Url to access
+	 * @param method Request method eg: POST, GET, etc. If null GET will be used
+	 * @param headers request headers, stored as key-value pairs. If null no headers will be sent
+	 * @return The parsed JSONArray
+	 * @throws JSONException If the json string cannot be retrieved from the URL or if the parsing of the json failed
+	 */
+	public JSONArray parseJSONArrayFromUrl(URL url, String method, JSONObject headers) throws JSONException {
+		return parseJSONArray(readUrl(url, method, headers));
+	}
+	
+	private static String readUrl(URL url, String method, JSONObject headers) throws JSONException {
+        if(url == null)
+        	return null;
+        if(method == null)
+        	method = "GET";
+        try {
+            final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod(method);
+            connection.setDoOutput(true);
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            
+            if(headers != null)
+            	for(Map.Entry<String, Object> e : headers.entrySet())
+            		connection.setRequestProperty(e.getKey(), e.getValue().toString());
+
+            connection.connect();
+
+            final StringBuilder result = new StringBuilder();
+            final BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null)
+                result.append(line);
+            
+            return result.toString();        	
+        } catch (IOException e) {
+        	throw new JSONException(e);
+        }
 	}
 	
 	private static String readFile(String path) throws JSONException {

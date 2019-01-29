@@ -78,12 +78,19 @@ Parsing
 ---------------
 
 ```java	
-	JSONObject json, fromFile;
+	JSONObject json, fromFile, fromInternet;
 	JSONArray array;
 	try {
+		// parse from String
 		json = JSONParser.get().parseJSONObject(jsonString);
 		array = JSONParser.get().parseJSONArray(jsonString);
+		// parse from file
 		fromFile = JSONParser.get().parseJSONObjectFromFile("data.json");
+		
+		// Sample request header
+		JSONObject requestHeaders = new JSONObject().put("session-id", getId());
+		// parse from url resource
+		fromInternet = JSONParser.get().parseJSONObjectFromUrl(new URL("http://www.ed0.es/data.json"), "GET", requestHeaders);
 	} catch (JSONException e) {
 		e.printStackTrace();
 	}
