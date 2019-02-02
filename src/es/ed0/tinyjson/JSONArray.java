@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import es.ed0.tinyjson.parser.C;
 import es.ed0.tinyjson.parser.JSONParser;
 
 /**
@@ -145,16 +144,5 @@ public class JSONArray extends JSONEntity<Integer> {
 	public void clear() {
 		list.clear();
 	}
-
-	@Override
-	public int getOpeningChar() {
-		return C.array_open;
-	}
-
-	@Override
-	public int getClosingChar() {
-		return C.array_close;
-	}
-
 
 }

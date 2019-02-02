@@ -166,7 +166,89 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 		else
 			return null;
 	}
-	
+
+	/**
+	 * Retrieves the String represented by the given key or index
+	 * @return String represented by key, default value if not found
+	 */
+	public String getString(T t, String defValue) {
+		final String s = String.valueOf(get(t));
+		return s == null ? defValue : s;
+	}
+
+	/**
+	 * Retrieves the Integer represented by the given key or index
+	 * @return Integer represented by key, default value if not found or is not an int
+	 */
+	public Integer getInt(T t, int defValue) {
+		try {
+			return Integer.valueOf(getString(t));
+		} catch (NumberFormatException e) {
+			return defValue;
+		}
+	}
+
+	/**
+	 * Retrieves the Double represented by the given key or index
+	 * @return Double represented by key, default value if not found or is not a double
+	 */
+	public Double getDouble(T t, double defValue) {
+		try {
+			return Double.valueOf(getString(t));
+		}catch (NumberFormatException e) {
+			return defValue;
+		}
+	}
+
+	/**
+	 * Retrieves the Long represented by the given key or index
+	 * @return Long represented by key, default value if not found or is not a long
+	 */
+	public Long getLong(T t, long defValue) {
+		try {
+			return Long.valueOf(getString(t));
+		}catch (NumberFormatException e) {
+			return defValue;
+		}
+	}
+
+	/**
+	 * Retrieves the Boolean represented by the given key or index
+	 * @return Boolean represented by key, default value if not found or is not a boolean
+	 */
+	public Boolean getBoolean(T t, boolean defValue) {
+		final String stringValue = getString(t);
+		if(stringValue.equals("true"))
+			return true;
+		else if(stringValue.equals("false"))
+			return false;
+		else
+			return defValue;
+	}
+
+	/**
+	 * Retrieves the JSONObject represented by the given key or index
+	 * @return JSONObject represented by key, default value if not found or is not a JSONObject
+	 */
+	public JSONObject getJSONObject(T t, JSONObject defValue) {
+		final Object o = get(t);
+		if(o instanceof JSONObject)
+			return (JSONObject) o;
+		else
+			return defValue;
+	}
+
+	/**
+	 * Retrieves the JSONArray represented by the given key or index
+	 * @return JSONArray represented by key, default value if not found or is not a JSONObject
+	 */
+	public JSONArray getJSONArray(T t, JSONArray defValue) {
+		final Object o = get(t);
+		if(o instanceof JSONArray)
+			return (JSONArray) o;
+		else
+			return defValue;
+	}
 	
 	/**
 	 * Returns the String representation of the JSON as a byte array
@@ -190,22 +272,5 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 * @return
 	 */
 	protected abstract String toPrettyString(String tabs);
-	
-	/**
-	 * Returns the opening character for this json<br>
-	 * '{' for jsonObject or '[' for jsonArray
-	 * @see #getClosingChar()
-	 * @return char as int
-	 */
-	public abstract int getOpeningChar();
-	
-	/**
-	 * Returns the closing character for this json<br>
-	 * '}' for jsonObject or ']' for jsonArray
-	 * @see #getOpeningChar()
-	 * @return char as int
-	 */
-	public abstract int getClosingChar();
-
-	
+		
 }

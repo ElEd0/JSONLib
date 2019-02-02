@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import es.ed0.tinyjson.parser.C;
 import es.ed0.tinyjson.parser.JSONParser;
 
 /**
@@ -32,7 +31,7 @@ public class JSONObject extends JSONEntity<String> {
 	public Object get(String... keys) {
 		final String[] leftOverKeys = new String[keys.length - 1];
 		for(int i=0; i<leftOverKeys.length; i++)
-			leftOverKeys[i] = keys[i+1];
+			leftOverKeys[i] = keys[i + 1];
 		
  		final Object o = get(keys[0]);
 		if(o == null || keys.length == 1)
@@ -155,16 +154,5 @@ public class JSONObject extends JSONEntity<String> {
 	public void putAll(Map<? extends String, ? extends Object> m) {
 		map.putAll(m);
 	}
-
-	@Override
-	public int getOpeningChar() {
-		return C.json_open;
-	}
-
-	@Override
-	public int getClosingChar() {
-		return C.json_close;
-	}
-
 	
 }
