@@ -78,7 +78,7 @@ Parsing
 ---------------
 
 ```java	
-	JSONObject json, fromFile, fromInternet;
+	JSONObject json, fromFile;
 	JSONArray array;
 	try {
 		// parse from String
@@ -87,10 +87,6 @@ Parsing
 		// parse from file
 		fromFile = JSONParser.get().parseJSONObjectFromFile("data.json");
 		
-		// Sample request header
-		JSONObject requestHeaders = new JSONObject().put("session-id", getId());
-		// parse from url resource
-		fromInternet = JSONParser.get().parseJSONObjectFromUrl(new URL("http://www.ed0.es/data.json"), "GET", requestHeaders);
 	} catch (JSONException e) {
 		e.printStackTrace();
 	}
@@ -100,6 +96,41 @@ Parsing
 	
 	//for pretty printing
 	System.out.println(json.toPrettyString());
+	
+```
+
+Get JSON From URL
+---------------
+
+```java	
+
+	// EXAMPLE: create a maps API request to obtain route
+	JSONUrlReader urlReader = new JSONUrlReader(
+				"https://maps.googleapis.com/maps/api/directions/json", "GET");
+		
+	urlReader.addParameter("Accept-Charset", "UTF-8");
+	urlReader.addParameter("origin", origin.lat + "," + origin.lng);
+	urlReader.addParameter("destination", destination.lat + "," + destination.lng);
+	urlReader.addParameter("key", "api-key");
+		
+	// retrieve the json response and get the route
+	try {
+		JSONObject response = urlReader.readJSONObject();
+		
+	String route = response.getJSONArray("routes").getJSONObject(0)
+		.getJSONObject("overview_polyline").getString("points");
+		
+	} catch (JSONException e) {
+		e.printStackTrace();
+	}
+	
+	// EXAMPLE: send request with http headers
+	JSONUrlReader url = new JSONUrlReader("http://non.existing.api/get/json", "POST");
+	url.addRequestHeader("sid", user.session);
+	url.addRequestHeader("server-action", "add-data");
+	url.addRequestHeader("data", user.data);
+			
+	JSONObject response = url.readJSONObject();
 	
 ```
 
