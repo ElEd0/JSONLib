@@ -91,7 +91,7 @@ public class JSONUrlReader {
         case "GET":
         	doOutput = false;
         	if(params.length() != 0)
-        		url += "?" + params;
+        		finalUrl += "?" + params;
         	break;
         }
 
