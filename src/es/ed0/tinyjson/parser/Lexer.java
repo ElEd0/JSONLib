@@ -73,7 +73,7 @@ public class Lexer {
 			
 			String keyString = key.getString();
 			
-			if(config.failOnDuplicateMappings() && obj.containsKey(keyString))
+			if(config.failOnDuplicateMappings() && obj.contains(keyString))
 				throw new JSONException(lastTokenPointer, "Duplicated key -> " + keyString,
 						"You can disable this error setting ParseConfiguration#setFailOnDuplicateMappings to false.");
 			

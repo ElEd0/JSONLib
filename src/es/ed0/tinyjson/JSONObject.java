@@ -33,7 +33,7 @@ public class JSONObject extends JSONEntity<String> {
 		for(int i=0; i<leftOverKeys.length; i++)
 			leftOverKeys[i] = keys[i + 1];
 		
- 		final Object o = get(keys[0]);
+ 		final Object o = opt(keys[0]);
 		if(o == null || keys.length == 1)
 			return o;
 		else if (o instanceof JSONEntity) 
@@ -43,7 +43,7 @@ public class JSONObject extends JSONEntity<String> {
 	}
 
 	@Override
-	public Object get(String t) {
+	public Object opt(String t) {
 		return map.get(t);
 	}
 
@@ -95,11 +95,8 @@ public class JSONObject extends JSONEntity<String> {
 		return sb.toString();
 	}
 
-	/**
-	 * Returns true if the key is found inside the json
-	 * @param key
-	 */
-	public boolean containsKey(Object key) {
+	@Override
+	public boolean contains(String key) {
 		return map.containsKey(key);
 	}
 
@@ -154,5 +151,6 @@ public class JSONObject extends JSONEntity<String> {
 	public void putAll(Map<? extends String, ? extends Object> m) {
 		map.putAll(m);
 	}
+
 	
 }

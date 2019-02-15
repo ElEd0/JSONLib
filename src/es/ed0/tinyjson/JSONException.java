@@ -6,7 +6,7 @@ package es.ed0.tinyjson;
 /**
  * Exception thrown when the parsing of a JSONObject or JSONArray fails
  */
-public class JSONException extends Exception{
+public class JSONException extends Exception {
 
 	private static final long serialVersionUID = -1821472377122339506L;
 	
@@ -23,8 +23,16 @@ public class JSONException extends Exception{
 	 * @param throwable Original exception
 	 */
 	public JSONException(Throwable throwable) {
-		super(throwable.getMessage());
-		setStackTrace(throwable.getStackTrace());
+		this(throwable.getMessage(), throwable);
+	}
+	
+	/**
+	 * Creates a new JSONException caused by the given throwable. Useful for wrapping exceptions
+	 * @param msg exception message
+	 * @param throwable cause of exception
+	 */
+	public JSONException(String msg, Throwable throwable) {
+		super(msg + ". Caused by " + throwable.getClass().getName() + ": " + throwable.getLocalizedMessage());
 	}
 	
 	/**

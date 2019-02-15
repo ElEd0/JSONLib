@@ -36,7 +36,7 @@ public class JSONArray extends JSONEntity<Integer> {
 		
  		Object o = null;
 		try {
-			o = get(Integer.valueOf(keys[0]));
+			o = opt(Integer.valueOf(keys[0]));
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -90,14 +90,22 @@ public class JSONArray extends JSONEntity<Integer> {
 		return sb.toString();
 	}
 
-
+	/* (non-Javadoc)
+	 * @see es.ed0.tinyjson.JSONEntity#opt(java.lang.Object)
+	 */
 	@Override
-	public Object get(Integer t) {
+	public Object opt(Integer t) {
 		try {
 			return list.get(t);
 		} catch (IndexOutOfBoundsException e) {
 			return null;
 		}
+	}
+
+
+	@Override
+	public boolean contains(Integer t) {
+		return t < this.size() && t >= 0;
 	}
 
 	public boolean containsValue(Object value) {
@@ -109,8 +117,9 @@ public class JSONArray extends JSONEntity<Integer> {
 		return list.size();
 	}
 
-	public void add(Object o) {
+	public JSONArray add(Object o) {
 		list.add(o);
+		return this;
 	}
 	
 	public void addAll(Collection<? extends Object> c) {
