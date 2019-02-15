@@ -26,12 +26,6 @@ public class Main {
 	private Main() throws JSONException {
 		
 		JSONSerializer serial = new JSONSerializer();
-		List<Student> studs = new ArrayList<Student>();
-		studs.add(new Student("ab0", "holi", "year2", true, new int[] {0, 1, 2, 3, 4}, new int[] {5, 4, 3, 2, 1}));
-		studs.add(new Student("ab1", "holi1", "year1", false, new int[] {0, 1, 2, 3, 4}, new int[] {5, 4, 3, 2, 1}));
-		studs.add(new Student("ab2", "holi2", "year2", false, new int[] {0, 1, 2, 3, 4}, new int[] {5, 4, 3, 2, 1}));
-		studs.add(new Student("ab3", "holi3", "year3", true, new int[] {0, 1, 2, 3, 4}, new int[] {5, 4, 3, 2, 1}));
-		studs.add(new Student("ab4", "holi4", "year4", true, new int[] {0, 1, 2, 3, 4}, new int[] {5, 4, 3, 2, 1}));
 		
 		JSONObject pojo = serial.serializeToJSONObject(new Pojo());
 		
