@@ -5,6 +5,7 @@ package es.ed0.tinyjson.parser;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +106,41 @@ public class JSONParser {
 	 */
 	public JSONArray parseJSONArrayFromFile(String filePath) throws JSONException {
 		return parseJSONArray(readFile(filePath));
+	}
+
+	/**
+	 * Write the given JSONObject or JSONArray as text to the given file. 
+	 * If the file does not exist it will be created, if it does exist its content will be overwritten.
+	 * @param json JSONEntity to save
+	 * @param filePath File's path
+	 * @throws JSONException If the operation failed
+	 */
+	public void saveJSONToFile(JSONEntity<?> json, String filePath) throws JSONException {
+		saveJSONToFile(json, filePath, false);
+	}
+	
+	/**
+	 * Write the given JSONObject or JSONArray as text to the given file. 
+	 * If the file does not exist it will be created, if it does exist its content will be overwritten.
+	 * @param json JSONEntity to save
+	 * @param filePath File's path
+	 * @param pretty If true the JSON will be formatted
+	 * @throws JSONException If the operation failed
+	 */
+	public void saveJSONToFile(JSONEntity<?> json, String filePath, boolean pretty) throws JSONException {
+		final File f = new File(filePath);
+		try {
+			f.createNewFile();
+			final FileWriter fw = new FileWriter(f);
+			if (pretty) {
+				fw.write(json.toPrettyString());
+			} else {
+				fw.write(json.toString());
+			}
+			fw.close();
+		} catch (IOException e) {
+			throw new JSONException(json.getClass().getSimpleName() + " could not be saved to file " + filePath, e);
+		}
 	}
 	
 	private static String readFile(String path) throws JSONException {

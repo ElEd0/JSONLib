@@ -4,7 +4,7 @@
 package es.ed0.tinyjson;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +23,7 @@ public class JSONObject extends JSONEntity<String> {
 	 */
 	public JSONObject() {
 		super();
-		this.map = new HashMap<String, Object>();
+		this.map = new LinkedHashMap<String, Object>();
 	}
 
 	
@@ -80,7 +80,7 @@ public class JSONObject extends JSONEntity<String> {
 		final StringBuilder sb = new StringBuilder("{\n");
 		int c = 0;
 		for(Map.Entry<String, Object> entry : entrySet()) {
-			sb.append(tabs + "\t" + entry.getKey() + " : ");
+			sb.append(tabs + "\t\"" + entry.getKey() + "\" : ");
 			final Object obj = entry.getValue();
 			if(obj instanceof JSONEntity)
 				sb.append(((JSONEntity<?>) obj).toPrettyString(tabs + "\t"));

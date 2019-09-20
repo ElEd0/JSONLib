@@ -15,6 +15,7 @@ public class ParseConfiguration {
 	private boolean ALLOW_UPPER_CASE_VALUES = true;
 	private boolean PARSE_NULLS = true;
 	private boolean PARSE_ESCAPED_INTO_UNESCAPED = true;
+	private int MAX_JSON_DEPTH = -1;
 	
 	/**
 	 * Allow random commas at the end of json bodies. Example: ["value", 3, true,]<br><br>
@@ -56,11 +57,18 @@ public class ParseConfiguration {
 	/**
 	 * If true it will replace escaped characters found in strings 
 	 * (see {@link es.ed0.tinyjson.parser.ParseConfiguration#setAllowUnknownEscapes(boolean)} for known escapes list)<br>
-	 * for its unescaped counterpart. I.e: "key1":"whats\\n up" to "key1":"whats\n up"<br><br>
+	 * for its unescaped counterpart. I.e: "key1":"whats\\ up" to "key1":"whats\ up"<br><br>
 	 * Default: true
 	 */
 	public void setParseEscapedAsUnescaped(boolean key) { PARSE_ESCAPED_INTO_UNESCAPED = key; }
 	
+	/**
+	 * UNIMPLEMENTED. Sets the max number of depth while parsing a json string, this is how deep a json structure is, 
+	 * for example a max depth of 2 will not allow a json inside a json inside a json, since this is considered to have 
+	 * a depth of 3. A max depth of -1 will mean no depth limit, which will cascade into the stack recursivity limit<br><br>
+	 * Default: -1
+	 */
+	public void setMaxJsonDepth(int key) { MAX_JSON_DEPTH = key; }
 	
 	/**
 	 * @see es.ed0.tinyjson.parser.ParseConfiguration#setAllowArbitraryCommas(boolean)
@@ -89,8 +97,11 @@ public class ParseConfiguration {
 	/**
 	 * @see es.ed0.tinyjson.parser.ParseConfiguration#setParseEscapedAsUnescaped(boolean)
 	 */
-	public boolean parseEscapedAsUnescaped() { return PARSE_ESCAPED_INTO_UNESCAPED; } 
-	
+	public boolean parseEscapedAsUnescaped() { return PARSE_ESCAPED_INTO_UNESCAPED; }
+	/**
+	 * @see es.ed0.tinyjson.parser.ParseConfiguration#setMaxJsonDepth(int)
+	 */
+	public int getMaxJsonDepth() { return MAX_JSON_DEPTH; }
 	
 	
 }

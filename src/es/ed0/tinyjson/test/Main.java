@@ -25,6 +25,10 @@ public class Main {
 
 	private Main() throws JSONException {
 		
+		
+		
+		
+		
 		JSONSerializer serial = new JSONSerializer();
 		
 		JSONObject pojo = serial.serializeToJSONObject(new Pojo());
@@ -39,9 +43,11 @@ public class Main {
 		
 		Pojo newPojo = serial.deserialize(pojo, Pojo.class);
 		
-		System.out.println(serial.serializeToJSONObject(newPojo).toPrettyString());
+		JSONObject deserialized = serial.serializeToJSONObject(newPojo);
 		
-		System.out.println();
+		System.out.println(deserialized.toPrettyString());
+		
+		JSONParser.get().saveJSONToFile(deserialized, "pojo.json");
 		
 		//JSONArray des = serial.serializeToArray(studs);
 		
