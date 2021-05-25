@@ -56,19 +56,16 @@ Iterate over values
 
 ```java
 	// JSONArrays
-	
 	for(Object obj : array) {
 		System.out.println(obj.toString());
 	}
 	
 	// JSONObjects
-	
 	for(Map.Entry<String, Object> pair : json.entrySet()) {
 		System.out.println(pair.getKey() + " - " + pair.getValue());
 	}
 	
 	// or...
-	
 	for(String key : json.keySet()) {
 		System.out.println(key + " - " + json.getString(key));
 	}
