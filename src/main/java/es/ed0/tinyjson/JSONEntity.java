@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Abstract class that defines basic functionality for JSON entities (json objects and arrays)
  * 
- * @param <T> Type of key: String for JSONS, Integer for Arrays
+ * @param <T> Type of key: String for JSONs, Integer for Arrays
  */
 public abstract class JSONEntity<T> implements Iterable<Object> {
 	
@@ -25,7 +25,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	
 	
 	/**
-	 * Retrieves the Object mapped by the given key or index or throws JSONEexception
+	 * Retrieves the Object mapped by the given key or index or throws JSONException
 	 * if the key is not mapped
 	 * @param t
 	 * @return
@@ -122,9 +122,9 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public boolean getBoolean(T t) throws JSONException {
 		final String stringValue = getString(t);
-		if(stringValue.equals("true"))
+		if (stringValue.equals("true"))
 			return true;
-		else if(stringValue.equals("false"))
+		else if (stringValue.equals("false"))
 			return false;
 		else
 			throw new JSONException("Value for " + t + " not found or is not a boolean type");
@@ -136,7 +136,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public byte getByte(T t) throws JSONException {
 		try {
-			return Byte.valueOf(getString(t));
+			return Byte.parseByte(getString(t));
 		} catch (NumberFormatException e) {
 			throw new JSONException("Value for " + t + " not found or is not a byte type");
 		}
@@ -148,7 +148,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public short getShort(T t) throws JSONException {
 		try {
-			return Short.valueOf(getString(t));
+			return Short.parseShort(getString(t));
 		} catch (NumberFormatException e) {
 			throw new JSONException("Value for " + t + " not found or is not a byte type");
 		}
@@ -159,7 +159,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public int getInt(T t) throws JSONException {
 		try {
-			return Integer.valueOf(getString(t));
+			return Integer.parseInt(getString(t));
 		} catch (NumberFormatException e) {
 			throw new JSONException("Value for " + t + " not found or is not an int type");
 		}
@@ -171,7 +171,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public float getFloat(T t) throws JSONException {
 		try {
-			return Float.valueOf(getString(t));
+			return Float.parseFloat(getString(t));
 		} catch (NumberFormatException e) {
 			throw new JSONException("Value for " + t + " not found or is not a byte type");
 		}
@@ -182,7 +182,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public double getDouble(T t) throws JSONException {
 		try {
-			return Double.valueOf(getString(t));
+			return Double.parseDouble(getString(t));
 		} catch (NumberFormatException e) {
 			throw new JSONException("Value for " + t + " not found or is not a double type");
 		}
@@ -194,7 +194,7 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	 */
 	public long getLong(T t) throws JSONException {
 		try {
-			return Long.valueOf(getString(t));
+			return Long.parseLong(getString(t));
 		} catch (NumberFormatException e) {
 			throw new JSONException("Value for " + t + " not found or is not a long type");
 		}
@@ -383,7 +383,33 @@ public abstract class JSONEntity<T> implements Iterable<Object> {
 	public byte[] getAsByteArray() {
 		return this.toString().getBytes();
 	};
-	
+
+	/**
+	 * Returns this JSONEntity as a JSONObject if class types match
+	 * @return this JSONEntity casted as a JSONObject
+	 * @throws JSONException if types don't match
+	 */
+	public JSONObject getAsJSONObject() throws JSONException {
+		if (this instanceof JSONObject) {
+			return (JSONObject) this;
+		}
+
+		throw new JSONException("JSONEntity cannot be returned as JSONObject");
+	}
+
+	/**
+	 * Returns this JSONEntity as a JSONArray if class types match
+	 * @return this JSONEntity casted as a JSONArray
+	 * @throws JSONException if types don't match
+	 */
+	public JSONArray getAsJSONArray() throws JSONException {
+		if (this instanceof JSONArray) {
+			return (JSONArray) this;
+		}
+
+		throw new JSONException("JSONEntity cannot be returned as JSONArray");
+	}
+
 	/**
 	 * Returns a prettified JSON string representing this JSONEntity
 	 * @return

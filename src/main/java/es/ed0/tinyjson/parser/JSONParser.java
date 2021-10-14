@@ -48,7 +48,7 @@ public class JSONParser {
 	 * @param mappings
 	 * @return
 	 */
-	public JSONObject parseJSONObject(Map<String, ? extends Object> mappings) {
+	public JSONObject parseJSONObject(Map<String, ?> mappings) {
 		final JSONObject o = new JSONObject();
 		o.putAll(mappings);
 		return o;
@@ -59,7 +59,7 @@ public class JSONParser {
 	 * @param list
 	 * @return
 	 */
-	public JSONArray parseJSONArray(List<? extends Object> list) {
+	public JSONArray parseJSONArray(List<?> list) {
 		final JSONArray a = new JSONArray();
 		a.addAll(list);
 		return a;
@@ -169,7 +169,7 @@ public class JSONParser {
 		try {
 			final FileReader fr = new FileReader(file);
 			int c = 0;
-			while((c = fr.read()) != -1)
+			while ((c = fr.read()) != -1)
 				sb.append((char) c);
 			fr.close();
 		} catch (IOException e) {
@@ -183,7 +183,7 @@ public class JSONParser {
 	 * @return the String representation
 	 */
 	public static String getJsonStringValueForObject(Object obj) {
-		if(obj == null)
+		if (obj == null)
 			return "null";
 		else if(obj instanceof Boolean || obj instanceof Integer ||
 				obj instanceof Float || obj instanceof Double ||

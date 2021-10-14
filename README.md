@@ -1,18 +1,28 @@
-====================================
-JSONLib tiniest JSON Library (WIP)
-====================================
-By Ed0
+JSONLib
+===
+Simple, feature-rich and boilerplate-free java JSON Library
 
-Download
---------
-
-Last releases in the exports folder
+[![](https://jitpack.io/v/ElEd0/JSONLib.svg)](https://jitpack.io/#ElEd0/JSONLib)
 
 
-Getting Started
----------------
+## Installation
 
-```java
+Available using Jitpack from gradle
+
+   ```gradle
+   repositories { 
+        jcenter()
+        maven { url "https://jitpack.io" }
+   }
+   dependencies {
+        implementation 'com.github.ElEd0:JSONLib:v2.2.2.1'
+   }
+   ```  
+
+
+### Getting Started
+
+```java	
 	JSONObject json = new JSONObject();
 	
 	//Insert objects
@@ -28,8 +38,8 @@ Getting Started
 	String value1 = json.getString("key1");
 	int value2 = json.getInt("key2");
 	double value3 = json.getDouble("key3");
-	long value4 = json.getLong("key4"); /* will fire NullPointerException */
-	boolean value5 = json.getBoolean("key5");
+	long value4 = json.getLong("key4");
+	boolean value5 = json.optBoolean("key5", false); // <- set fallback values
 	JSONObject value6 = json.getJSONObject("key6");
 	JSONArray value7 = json.getJSONArray("key7");
 	
@@ -47,14 +57,11 @@ Getting Started
 	
 	// quick creation
 	return new JSONObject().put("name", "Foo bar").put("age", 23).toString();
-	
-	
 ```
 
-Iterate over values
----------------
+### Iterate over values
 
-```java
+```java	
 	// JSONArrays
 	for(Object obj : array) {
 		System.out.println(obj.toString());
@@ -71,8 +78,7 @@ Iterate over values
 	}
 ```
 
-Parsing
----------------
+### Parsing
 
 ```java	
 	JSONObject json, fromFile;
@@ -93,19 +99,16 @@ Parsing
 	
 	//for pretty printing
 	System.out.println(json.toPrettyString());
-	
 ```
 
-Get JSON From URL
----------------
+### Get JSON From HTTP request
 
 ```java	
-
 	// EXAMPLE: create a maps API request to obtain route
 	JSONUrlReader urlReader = new JSONUrlReader(
 				"https://maps.googleapis.com/maps/api/directions/json", "GET");
 		
-	urlReader.addParameter("Accept-Charset", "UTF-8");
+	urlReader.addRequestHeader("Accept-Charset", "UTF-8");
 	urlReader.addParameter("origin", origin.lat + "," + origin.lng);
 	urlReader.addParameter("destination", destination.lat + "," + destination.lng);
 	urlReader.addParameter("key", "api-key");
@@ -120,19 +123,9 @@ Get JSON From URL
 	} catch (JSONException e) {
 		e.printStackTrace();
 	}
-	
-	// EXAMPLE: send request with http headers
-	JSONUrlReader url = new JSONUrlReader("http://non.existing.api/get/json", "POST");
-	url.addRequestHeader("sid", user.session);
-	url.addRequestHeader("server-action", "add-data");
-	url.addRequestHeader("data", user.data);
-			
-	JSONObject response = url.readJSONObject();
-	
 ```
 
-Parsing configuration
----------------
+### Customizable Parsing configuration
 
 ```java	
 	ParseConfiguration config = new ParseConfiguration();
@@ -145,6 +138,5 @@ Parsing configuration
 	config.setParseNulls(true);
 		
 	JSONObject json = JSONParser.get(config).parseJSONObject(jsonString);
-	
 ```
 

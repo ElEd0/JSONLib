@@ -23,15 +23,11 @@ public class JSONArray extends JSONEntity<Integer> {
 		super();
 		list = new ArrayList<Object>();
 	}
-	
 
-	/* (non-Javadoc)
-	 * @see es.ed0.jsonlib.JSONEntity#get(java.lang.String[])
-	 */
 	@Override
 	public Object get(String... keys) {
 		final String[] leftOverKeys = new String[keys.length - 1];
-		for(int i=0; i<leftOverKeys.length; i++)
+		for (int i = 0, len = leftOverKeys.length; i < len; i++)
 			leftOverKeys[i] = keys[i+1];
 		
  		Object o = null;
@@ -40,7 +36,7 @@ public class JSONArray extends JSONEntity<Integer> {
 		} catch (NumberFormatException e) {
 			return null;
 		}
-		if(o == null || keys.length == 1)
+		if (o == null || keys.length == 1)
 			return o;
 		else if (o instanceof JSONEntity)
 			return ((JSONEntity<?>) o).get(leftOverKeys);
@@ -56,7 +52,6 @@ public class JSONArray extends JSONEntity<Integer> {
 		final StringBuilder sb = new StringBuilder("[");
 
 		for(Object obj : this)
-			// "value",
 			sb.append(JSONParser.getJsonStringValueForObject(obj)).append(",");
 		
 		if(sb.length() != 1)
@@ -76,7 +71,7 @@ public class JSONArray extends JSONEntity<Integer> {
 		final StringBuilder sb = new StringBuilder("[\n");
 		int c = 0;
 		for(Object entry : this) {
-			sb.append(tabs + "\t");
+			sb.append(tabs).append("\t");
 			if(entry instanceof JSONEntity)
 				sb.append(((JSONEntity<?>) entry).toPrettyString(tabs + "\t"));
 			else
@@ -86,13 +81,10 @@ public class JSONArray extends JSONEntity<Integer> {
 			sb.append("\n");
 			c++;
 		}
-		sb.append(tabs + "]");
+		sb.append(tabs).append("]");
 		return sb.toString();
 	}
 
-	/* (non-Javadoc)
-	 * @see es.ed0.tinyjson.JSONEntity#opt(java.lang.Object)
-	 */
 	@Override
 	public Object opt(Integer t) {
 		try {
@@ -101,7 +93,6 @@ public class JSONArray extends JSONEntity<Integer> {
 			return null;
 		}
 	}
-
 
 	@Override
 	public boolean contains(Integer t) {
@@ -122,7 +113,7 @@ public class JSONArray extends JSONEntity<Integer> {
 		return this;
 	}
 	
-	public void addAll(Collection<? extends Object> c) {
+	public void addAll(Collection<?> c) {
 		list.addAll(c);
 	}
 	

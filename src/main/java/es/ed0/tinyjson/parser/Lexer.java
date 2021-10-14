@@ -43,8 +43,8 @@ public class Lexer {
 		this.config = config;
 	}
 	
-	public JSONEntity<? extends Object> parse() throws JSONException {		
-		if(json.startsWith("{") && json.endsWith("}"))
+	public JSONEntity<?> parse() throws JSONException {
+		if (json.startsWith("{") && json.endsWith("}"))
 			return parseObj();
 		else if (json.startsWith("[") && json.endsWith("]"))
 			return parseArr();
@@ -53,72 +53,72 @@ public class Lexer {
 	}
 	
 	public JSONObject parseObj() throws JSONException {
-		if(!(json.startsWith("{") && json.endsWith("}")))
+		if (!(json.startsWith("{") && json.endsWith("}")))
 			throw new JSONException("JSON String must be encapsulated in braces { }");
 
 		json = json.substring(1, json.length() - 1);
 		
 		final JSONObject obj = new JSONObject();
 		
-		while(hasChars()) {
+		while (hasChars()) {
 			nextExpectedToken = TOKEN_KEY;
 			final Token key = nextToken();
 			nextExpectedToken = TOKEN_VALUE;
 			
-			if(key == null) {
-				if(hasChars())
+			if (key == null) {
+				if (hasChars())
 					throw new JSONException(lastTokenPointer , "Invalid key (null)");
 				continue;
 			}
 			
 			String keyString = key.getString();
 			
-			if(config.failOnDuplicateMappings() && obj.contains(keyString))
+			if (config.failOnDuplicateMappings() && obj.contains(keyString))
 				throw new JSONException(lastTokenPointer, "Duplicated key -> " + keyString,
 						"You can disable this error setting ParseConfiguration#setFailOnDuplicateMappings to false.");
 			
 			final Token value = nextToken();
 
-			if(value == null) 
+			if (value == null)
 				throw new JSONException(lastTokenPointer, "Invalid value (null)");
 			
 			final Object realValue = value.getValue();
 			
-			if(!(!config.parseNulls() && realValue == null)) {
+			if (!(!config.parseNulls() && realValue == null)) {
 				obj.put(keyString, realValue);
 			}
 			
 		}
 		
-		// if status is reading then json didnt finished as expected, probably ',' at the end of body
+		// if status is reading then json didn't finished as expected, probably ',' at the end of body
 		checkForHappyEnding();
 		
 		return obj;
 	}
 	
 	public JSONArray parseArr() throws JSONException {
-		if(!(json.startsWith("[") && json.endsWith("]")))
+		if (!(json.startsWith("[") && json.endsWith("]")))
 			throw new JSONException("JSON String must be encapsulated in braces [ ]");
 		
 		json = json.substring(1, json.length() - 1);
 		
 		final JSONArray obj = new JSONArray();
 		
-		while(hasChars()) {
+		while (hasChars()) {
 			// expected token is always key, so it searches for the ',' character
 			nextExpectedToken = TOKEN_KEY;
 			final Token value = nextToken();
 			
 			
-			if(value == null) {
-				if(hasChars())
+			if (value == null) {
+				if (hasChars())
 					throw new JSONException(lastTokenPointer, "Invalid value (null)");
 				continue;
 			}
 
 			final Object realValue = value.getValue();
 			
-			if(!(!config.parseNulls() && realValue == null))
+			if (!(!config.parseNulls() && realValue == null))
 				obj.add(realValue);
 			
 		}
@@ -136,8 +136,7 @@ public class Lexer {
 	private Token nextToken() throws JSONException {
 		lastTokenPointer = pointer;
 
-		final StringBuffer buffer = new StringBuffer();
-
+		final StringBuilder buffer = new StringBuilder();
 		
 		int openedScopes = 0;
 		char scopeCloser = C.end, scopeOpener = C.end;
@@ -151,21 +150,21 @@ public class Lexer {
 			// System.out.println("->"+ pointer + "  Reading: " + c + " in status: " + pointerStatus);
 			
 			
-			if(c != ' ')
+			if (c != ' ')
 				lastNonSpaceChar = c;
 			
-			if(!config.allowsUnknownEscapes() && (inEscape == 1) && !isEscape(c))
+			if (!config.allowsUnknownEscapes() && (inEscape == 1) && !isEscape(c))
 				throw new JSONException(previousLength + pointer, "Unknown escape found -> \\" + c,
 						"You can allow this setting to true ParseConfiguration#setAllowUnknownEscapes (default: true)");
 
 			// if last char was the escape '\' indicator inEscape will be 1
 			// So at the iteration 2 the escape character has already been processed, return to 0
-			if(inEscape == 1)
+			if (inEscape == 1)
 				inEscape++;
 			else if (inEscape >= 2)
 				inEscape = 0;
 
-			if(pointerStatus == STATUS_STOPPED)
+			if (pointerStatus == STATUS_STOPPED)
 				pointerStatus = STATUS_READING;
 
 			
@@ -177,7 +176,7 @@ public class Lexer {
 				switch(c) {
 				case C.end:
 					pointerStatus = STATUS_STOPPED;
-					if(nextExpectedToken == TOKEN_VALUE)
+					if (nextExpectedToken == TOKEN_VALUE)
 						throw new JSONException(previousLength + pointer, "Unexpected end of body");
 					else
 						return null;
@@ -187,7 +186,7 @@ public class Lexer {
 					// If other character is found it throws exception
 				case C.colon:
 				case C.coma:
-					if(c == nextExpectedToken) {
+					if (c == nextExpectedToken) {
 						pointerStatus = STATUS_READING;
 						break;
 					}
@@ -244,7 +243,7 @@ public class Lexer {
 				case C.end:
 					pointerStatus = STATUS_STOPPED;
 					//if buffer has some text it could be from a value
-					if(buffer.length() > 0)
+					if (buffer.length() > 0)
 						return new Token(config, Token.value, buffer.toString(), previousLength + pointer - buffer.length());
 					else
 						throw new JSONException(previousLength + pointer, "Invalid char " + c);
@@ -265,7 +264,7 @@ public class Lexer {
 					buffer.append(c);
 					break;
 				case C.quote:
-					if(inEscape == 0 && c == scopeCloser) {
+					if (inEscape == 0 && c == scopeCloser) {
 						pointerStatus = STATUS_SEARCHING_DIVISOR;
 						return new Token(config, Token.text, buffer.toString(), previousLength + pointer - buffer.length());
 					}
@@ -286,11 +285,11 @@ public class Lexer {
 					buffer.append(c);
 					break;
 				case C.quote:
-					if(inEscape == 0)
+					if (inEscape == 0)
 						inString = !inString;
 				default:
-					if(!inString) {
-						if(c == scopeCloser)
+					if (!inString) {
+						if (c == scopeCloser)
 							openedScopes--;
 						else if (c == scopeOpener)
 							openedScopes++;
@@ -298,7 +297,7 @@ public class Lexer {
 					
 					buffer.append(c);
 					
-					if(openedScopes == 0) {
+					if (openedScopes == 0) {
 						pointerStatus = STATUS_SEARCHING_DIVISOR;
 						return new Token(config, Token.json, buffer.toString(), previousLength + pointer - buffer.length());
 					}
@@ -311,7 +310,7 @@ public class Lexer {
 
 		}
 		
-		if(buffer.length() < 1)
+		if (buffer.length() < 1)
 			return null;
 		return new Token(config, Token.value, buffer.toString(), previousLength + pointer - buffer.length());
 	}
@@ -321,9 +320,9 @@ public class Lexer {
 	 * Checks for any trouble during the last sections of the body and throws the corresponding exception
 	 */
 	private void checkForHappyEnding() throws JSONException {
-		if(pointerStatus == STATUS_READING) {
+		if (pointerStatus == STATUS_READING) {
 			// if status is reading then json didnt finished as expected, probably , at the end of body
-			if(lastNonSpaceChar == C.coma && !config.allowsArbitraryCommas()) {
+			if (lastNonSpaceChar == C.coma && !config.allowsArbitraryCommas()) {
 				throw new JSONException(lastTokenPointer, "Found ',' at end of body",
 						"Allow this via ParseConfiguration#setAllowArbitraryCommas");
 			}
@@ -375,18 +374,15 @@ public class Lexer {
 	 * @return if pointer is at the json end
 	 */
 	private boolean hasChars() {
-		if(pointer >= json.length())
-			return false;
-		return true;
+		return pointer < json.length();
 	}
 	
 	/**
 	 * Returns the next char and moves the pointer one position forward
-	 * @return next char or {@link C.end} if no more chars available
+	 * @return next char or {@link C#end} if no more chars available
 	 */
 	private char nextChar() {
-		// System.out.println("Requesting char at pos " + pointer + " for body " +json+" of length " +json.length() );
-		if(hasChars())
+		if (hasChars())
 			return escapeBackslash(json.charAt(pointer++));
 		else
 			return (char) C.end;
@@ -399,13 +395,13 @@ public class Lexer {
 	 */
 	private char escapeBackslash(char c) {
 		switch(c) {
-		case C.escape_backspace:
-		case C.escape_formfeed:
-		case C.escape_newline:
-		case C.escape_carriage:
-		case C.escape_tab:
-			return ' ';
-		default: return c;
+			case C.escape_backspace:
+			case C.escape_formfeed:
+			case C.escape_newline:
+			case C.escape_carriage:
+			case C.escape_tab:
+				return ' ';
+			default: return c;
 		}
 	}
 	

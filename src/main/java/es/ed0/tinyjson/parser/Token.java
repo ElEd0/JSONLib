@@ -30,14 +30,14 @@ public class Token {
 	}
 	
 	public String toString() {
-		if(config.parseEscapedAsUnescaped())
+		if (config.parseEscapedAsUnescaped())
 			return JSONParser.unescape(raw);
 		return raw;
 	}
 	
 	
 	public String getString() throws JSONException {
-		if(type != text)
+		if (type != text)
 			throw new JSONException("Invalid key " + raw);
 		return toString();
 	}
@@ -49,19 +49,18 @@ public class Token {
 		case text: return toString();
 		
 		case value:
-			if(config.allowsUpperCaseValues())
+			if (config.allowsUpperCaseValues())
 				raw = raw.toLowerCase();
-			if(raw.equals("null"))// is null
+			if (raw.equals("null"))// is null
 				return null;
 			else if (raw.equals("true") || raw.equals("false"))// is boolean
 				return Boolean.valueOf(raw);
 			else {
-				
 				// check if value is number, if it is not, no more options left bad boy
 				final Number num = JSONParser.parseNumber(raw);
-				if(num == null)
+				if (num == null)
 					throw new JSONException(startPosition, "Invalid value " + raw);
-				else if(!config.allowsExponential() && (raw.contains("e") || raw.contains("E")))
+				else if (!config.allowsExponential() && (raw.contains("e") || raw.contains("E")))
 						throw new JSONException(startPosition, "Exponential is not allowed in the configuration!",
 								"You can enable it setting to true ParseConfiguration#setAllowExponential (default: true)");
 				else

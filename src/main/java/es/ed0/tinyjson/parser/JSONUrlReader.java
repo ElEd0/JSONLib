@@ -78,7 +78,7 @@ public class JSONUrlReader {
 	 * @throws JSONException If connection to the url could not be established or something went wrong reading the response
 	 */
 	public String readString() throws JSONException {
-        if(url == null)
+        if (url == null)
         	return null;
         
         String params = getParameterString();
@@ -104,13 +104,13 @@ public class JSONUrlReader {
             connection.setConnectTimeout(connectionTimeout);
             connection.setReadTimeout(readTimeout);
             
-            if(headers != null)
+            if (headers != null)
             	for(Map.Entry<String, String> e : headers.entrySet())
             		connection.setRequestProperty(e.getKey(), e.getValue());
 
             connection.connect();
             
-            if(method.equals("POST")) {
+            if (method.equals("POST")) {
                 DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
                 wr.writeBytes(params);
                 wr.flush();

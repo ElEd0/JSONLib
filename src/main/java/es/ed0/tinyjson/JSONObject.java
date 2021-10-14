@@ -30,11 +30,11 @@ public class JSONObject extends JSONEntity<String> {
 	@Override
 	public Object get(String... keys) {
 		final String[] leftOverKeys = new String[keys.length - 1];
-		for(int i=0; i<leftOverKeys.length; i++)
+		for (int i = 0, len = leftOverKeys.length; i < len; i++)
 			leftOverKeys[i] = keys[i + 1];
 		
  		final Object o = opt(keys[0]);
-		if(o == null || keys.length == 1)
+		if (o == null || keys.length == 1)
 			return o;
 		else if (o instanceof JSONEntity) 
 			return ((JSONEntity<?>) o).get(leftOverKeys);
@@ -66,8 +66,9 @@ public class JSONObject extends JSONEntity<String> {
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("{");
 
-		for(Map.Entry<String, Object> entry : entrySet())
-			sb.append("\"" + entry.getKey() + "\":" + JSONParser.getJsonStringValueForObject(entry.getValue()) + ",");
+		for (Map.Entry<String, Object> entry : entrySet())
+			sb.append("\"").append(entry.getKey()).append("\":")
+					.append(JSONParser.getJsonStringValueForObject(entry.getValue())).append(",");
 		
 		if(sb.length() != 1)
 			sb.delete(sb.length() - 1, sb.length()); // remove last comma
@@ -80,18 +81,18 @@ public class JSONObject extends JSONEntity<String> {
 		final StringBuilder sb = new StringBuilder("{\n");
 		int c = 0;
 		for(Map.Entry<String, Object> entry : entrySet()) {
-			sb.append(tabs + "\t\"" + entry.getKey() + "\" : ");
+			sb.append(tabs).append("\t\"").append(entry.getKey()).append("\" : ");
 			final Object obj = entry.getValue();
-			if(obj instanceof JSONEntity)
+			if (obj instanceof JSONEntity)
 				sb.append(((JSONEntity<?>) obj).toPrettyString(tabs + "\t"));
 			else
 				sb.append(JSONParser.getJsonStringValueForObject(entry.getValue()));
-			if(c != this.size() - 1)
+			if (c != this.size() - 1)
 				sb.append(",");
 			sb.append("\n");
 			c++;
 		}
-		sb.append(tabs + "}");
+		sb.append(tabs).append("}");
 		return sb.toString();
 	}
 
@@ -148,7 +149,7 @@ public class JSONObject extends JSONEntity<String> {
 		return map.size();
 	}
 
-	public void putAll(Map<? extends String, ? extends Object> m) {
+	public void putAll(Map<? extends String, ?> m) {
 		map.putAll(m);
 	}
 
